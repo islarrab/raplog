@@ -1,0 +1,25 @@
+start
+	a = 1
+	b = 2
+	c = 3
+	"entrada: " get d
+	put "Esto es un output! yay!"
+	if a*b > a+c
+	yes
+		put "a*b > a+c es verdadero!"
+	no
+		put "a*b > a+c es falso!"
+	endif
+	
+	loop a<c
+		a = a + 1
+		put a
+	endloop
+	
+	if not a>b and not b>c or a+b < b+c
+	yes
+		put "expresiones funcionan!"
+	no
+		put "expresiones no funcionan :("
+	end # error de sintaxis, sigue endif no end
+end

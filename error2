@@ -1,0 +1,39 @@
+fibonacci(in n, out f)
+    if n >= 2
+    yes
+    	fibonacci(n - 1, f1)
+    	fibonacci(n - 2, f2)
+    	f = f1 + f2
+    no
+    	f = n
+    endif
+end
+
+factorial(in n, out f)
+	if n <= 1
+	yes
+		f = n
+	no
+		factorial(n - 1, f1)
+		f = f * f1
+	endif
+end
+
+start
+	_asd123ASD = 1
+	ABC_DEF = 2
+	_______ = 3 # segun sintaxis esto es un id aceptable
+	put "secuencia fibonacci hasta el 10° numero"
+	i = 1
+	loop i <= 10
+		fibonacci(i, res)
+		put res+", "
+		i = i + 1
+	endloop
+	
+	%$¡?¬| # unos cuantos caracteres ilegales
+	123asd = 1 # id ilegal
+	
+	factorial(10, res)
+	put "factorial de 10 es "+res
+end

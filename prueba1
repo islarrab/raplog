@@ -1,0 +1,26 @@
+start {
+	a = 199999999999999999999999999999999999999999999999999
+	b = 2
+	c = 3
+	
+	put "Esto es un output! yay! dame un valor:"
+	get d
+	
+	if a*b > a+c
+	{
+		put "a*b > a+c es verdadero!"
+	} else {
+		put "a*b > a+c es falso!"
+	}
+	
+	loop a<c
+	{
+		a = a + 1
+		put a
+	}
+	
+	if not a>b and not b>c or a+b < b+c
+	{
+		put "expresiones funcionan!"
+	}
+}
