@@ -9,6 +9,7 @@ reserved = {
    'start' : 'START',
    'if' : 'IF',
    'else' : 'ELSE',
+   'loop' : 'LOOP',
    'in' : 'IN',
    'out' : 'OUT',
    'get' : 'GET',
@@ -20,7 +21,7 @@ reserved = {
 
 tokens = list(reserved.values()) + [
 	'PLUS','MINUS','TIMES','DIVIDE',
-	'EQ','NE','LT','MT','LTEQ','MTEQ',
+	'EQ','EQEQ','NE','LT','MT','LTEQ','MTEQ',
 	'LPAREN','RPAREN','LCURLY','RCURLY','COMA',
 	'INT','FLOAT','STR','ID'
 ]
@@ -31,6 +32,7 @@ t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
 t_EQ = r'='
+t_EQEQ = r'=='
 t_NE = r'<>'
 t_LT = r'<'
 t_MT = r'>'
@@ -66,6 +68,7 @@ def t_FLOAT(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
+    
     t.type = reserved.get(t.value,'ID') # Check for reserved words
     return t
 
@@ -91,7 +94,6 @@ lex.input(open(sys.argv[1], 'r').read())
 while 1:
     tok = lex.token()
     if not tok:
-        t.lex.lineno = 0
         break
     print tok
 '''
@@ -99,38 +101,56 @@ while 1:
 precedence = (
     ('left','OR'),
     ('left','AND'),
-    ('right','NOT'),
-    ('nonassoc','EQ','NE','LT','MT','LTEQ','MTEQ'),
+    ('nonassoc','EQEQ','NE','LT','MT','LTEQ','MTEQ'),
     ('left','PLUS','MINUS'), 
     ('left','TIMES','DIVIDE'), 
+    ('right','NOT'),
+    ('right','UPLUS'),
     ('right','UMINUS')
 )
 
-# dictionary of names
-names = { } 
+# tabla de variables
+var_table = { }
+scopes = [ ]
 
-def p_ogol(p):
-    'ogol : defs START statements-block'
+# tabla de procedimientos
+proc_table = { }
+current_proc = 'program'
 
-def p_defs(p):
-    '''defs : def defs 
-           | empty'''
+start = 'raplog'
 
-def p_def(p):
-    'def : ID defparams statements-block'
-
-def p_statements_block(p):
-    'statements-block: LCURLY new_scope statements RCURLY'
-    # Action code
-    # ...
-    pop_scope()        # Return to previous scope
-
+def pop_scope():
+    var_table = scopes.pop()
 
 def p_new_scope(p):
     "new_scope :"
-    # Create a new scope for local variables
-    s = new_scope()
-    push_scope(s)
+    scopes.append(var_table)
+
+def p_add_proc_main(p):
+    'add_proc_main :'
+    global current_proc
+    current_proc = 'main'
+    proc_table[current_proc] = {}
+
+def p_set_proc(p):
+    'set_proc :'
+    global current_proc
+    current_proc = p[-1]
+    proc_table[current_proc] = {}
+
+def p_raplog(p):
+    'raplog : defs add_proc_main START statements-block'
+
+def p_defs(p):
+    '''defs : def defs 
+            | empty'''
+
+def p_def(p):
+    'def : ID set_proc defparams statements-block'
+
+def p_statements_block(p):
+    'statements-block : LCURLY new_scope statements RCURLY'
+    pop_scope()        # Return to previous scope
 
 def p_statements(p):
     '''statements : assignment statements 
@@ -143,7 +163,9 @@ def p_statements(p):
 
 def p_assignment(p):
     'assignment : ID EQ expression'
-    names[p[1]] = p[3]
+    var_table[p[1]] = p[3]
+    #print 'ID: {}, Proc: {}'.format(p[1], current_proc)
+    proc_table[current_proc][p[1]] = p[3]
 
 def p_call(p):
     'call : ID callparams'
@@ -153,6 +175,9 @@ def p_input(p):
 
 def p_output(p):
     'output : PUT string'
+    
+def p_output_id(p):
+    'output : PUT ID'
 
 def p_selection(p):
     '''selection : IF expression statements-block
@@ -164,17 +189,23 @@ def p_loop(p):
 def p_defparams(p):
     'defparams : LPAREN defparams1 RPAREN'
 
+# para las defparams hay que agregar el caso en el que esten ambas palabras in y out
+
 def p_defparams1(p):
     '''defparams1 : IN ID defparams2 
                   | OUT ID defparams2 
                   | IN OUT ID defparams2 
                   | empty'''
+    var_table[p[2]] = 0
+    proc_table[current_proc][p[2]] = 0
 
 def p_defparams2(p):
     '''defparams2 : COMA IN ID defparams2 
                   | COMA OUT ID defparams2 
                   | COMA IN OUT ID defparams2 
                   | empty'''
+    #var_table[p[3]] = 0
+    #proc_table[current_proc][p[3]] = 0
 
 def p_callparams(p):
     'callparams : LPAREN callparams1 RPAREN'
@@ -189,16 +220,40 @@ def p_callparams2(p):
                    | COMA string callparams2 
                    | empty'''
 
-def p_varcte(p):
+def p_varcte_number(p):
     '''varcte : INT 
-              | FLOAT
-              | ID'''
+              | FLOAT'''
+    p[0] = p[1]
+
+def p_varcte_id(p):
+    'varcte : ID'
+    try:
+        #p[0] = var_table[p[1]]
+        p[0] = proc_table[current_proc][p[1]]
+        #print("using: {}, scope: {}".format(p[1], var_table))
+    except LookupError:
+        print("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
+        global error
+        error = True
+        p[0] = 0
 
 def p_string(p):
-    '''string : STR
-              | varcte
-              | STR PLUS string
-              | varcte PLUS string'''
+    'string : STR'
+    p[0] = p[1]
+
+'''
+def p_string_converter(p):
+    'string : expression'
+    p[0] = str(p[1])
+
+def p_string_concatenation(p):
+    'string : STR PLUS string'
+    p[0] = p[1] + p[3]
+
+def p_string_converter_concatenation(p):
+    'string : expression PLUS string'
+    p[0] = str(p[1]) + p[3]
+'''
 
 def p_expression_boolean(p):
     '''expression : expression AND expression
@@ -206,7 +261,7 @@ def p_expression_boolean(p):
                   | NOT expression'''
 
 def p_expression_comparison(p):
-    '''expression : expression EQ expression
+    '''expression : expression EQEQ expression
                   | expression NE expression
                   | expression LT expression
                   | expression MT expression
@@ -223,29 +278,24 @@ def p_expression_group(p):
     'expression : LPAREN expression RPAREN'
     p[0] = p[2]
 
+def p_expression_uplus(p):
+    'expression : PLUS expression %prec UPLUS'
+    p[0] = p[2]
+
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
     p[0] = -p[2]
 
-def p_expression_number(p):
-    '''expression : INT
-                  | FLOAT'''
+def p_expression_element(p):
+    'expression : varcte'
     p[0] = p[1]
-
-def p_expression_id(p):
-    'expression : ID'
-    try:
-        p[0] = names[p[1]]
-    except LookupError:
-        print("Undefined name '%s'" % p[1]) 
-        p[0] = 0
 
 def p_empty(p):
     'empty :'
     pass
 
-def p_error(p):
-	print("Syntax error at line {}".format(p.lineno))
+def p_error(t):
+	print("Syntax error at line {}, near {}".format(t.lineno, t.value))
 	global error
 	error = True
 

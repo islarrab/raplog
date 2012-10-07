@@ -5,9 +5,9 @@ _tabversion = '3.2'
 
 _lr_method = 'LALR'
 
-_lr_signature = '\xe1\xf8::\x02(\x14\xb4u\x93i\x1f?\x7f\x1d\xfa'
+_lr_signature = '\xc5\xc7\x18\xb1#\xfa\\\xff\x05\x8b\x12\xcc\xbb\x9a$\xb7'
     
-_lr_action_items = {'$end':([1,2,3,5,9,14,15,16,17,18,19,20,],[-10,-9,0,-2,-10,-7,-1,-8,-3,-6,-4,-5,]),'RPAREN':([2,8,9,14,16,17,18,19,20,],[-9,16,-10,-7,-8,-3,-6,-4,-5,]),'DIVIDE':([1,2,5,8,9,14,15,16,17,18,19,20,],[-10,-9,11,11,-10,-7,11,-8,11,-6,11,-5,]),'EQUALS':([1,],[7,]),'NUMBER':([0,4,6,7,10,11,12,13,],[2,2,2,2,2,2,2,2,]),'PLUS':([1,2,5,8,9,14,15,16,17,18,19,20,],[-10,-9,10,10,-10,-7,10,-8,-3,-6,-4,-5,]),'LPAREN':([0,4,6,7,10,11,12,13,],[4,4,4,4,4,4,4,4,]),'TIMES':([1,2,5,8,9,14,15,16,17,18,19,20,],[-10,-9,13,13,-10,-7,13,-8,13,-6,13,-5,]),'MINUS':([0,1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,],[6,-10,-9,6,12,6,6,12,-10,6,6,6,6,-7,12,-8,-3,-6,-4,-5,]),'NAME':([0,4,6,7,10,11,12,13,],[1,9,9,9,9,9,9,9,]),}
+_lr_action_items = {'LPAREN':([4,7,30,31,36,48,49,50,52,53,57,78,79,80,82,83,84,85,86,87,88,89,90,95,],[-3,11,49,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,]),'EQEQ':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,82,82,82,82,-59,-58,82,-46,-57,82,None,-56,None,None,None,None,None,-53,-54,-55,82,82,]),'LCURLY':([9,10,22,51,54,55,56,58,65,74,75,77,100,101,102,103,104,105,106,107,108,109,110,111,112,113,],[13,13,-24,-60,-42,-40,-41,13,13,-59,-58,-46,-57,-44,-52,-56,13,-47,-51,-48,-50,-49,-53,-54,-55,-45,]),'MINUS':([31,36,48,49,50,51,52,53,54,55,56,57,58,65,69,73,74,75,76,77,78,79,80,82,83,84,85,86,87,88,89,90,95,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[50,50,50,50,50,-60,50,50,-42,-40,-41,50,88,88,88,88,-59,-58,88,-46,50,50,50,50,50,50,50,50,50,50,50,50,50,-57,88,88,-56,88,88,88,88,88,-53,-54,-55,88,88,]),'RPAREN':([11,15,17,21,23,37,38,40,41,49,51,54,55,56,62,66,70,71,72,73,74,75,76,77,92,94,96,97,99,100,101,102,103,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,],[-61,-28,22,-61,-61,-61,-25,-32,-26,-61,-60,-42,-40,-41,-43,-27,-61,98,-36,-61,-59,-58,100,-46,-61,-61,-39,-35,-34,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-30,-61,-29,-61,-61,-31,-38,-37,]),'RCURLY':([13,19,24,25,26,27,28,29,33,35,42,43,44,45,46,47,51,54,55,56,59,60,61,62,63,64,69,74,75,77,81,91,98,100,101,102,103,105,106,107,108,109,110,111,112,113,119,],[-1,-61,-61,43,-61,-61,-15,-61,-61,-61,-13,-8,-10,-11,-9,-17,-60,-42,-40,-41,-18,-14,-19,-43,-20,-12,-16,-59,-58,-46,-21,-23,-33,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-22,]),'NE':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,84,84,84,84,-59,-58,84,-46,-57,84,None,-56,None,None,None,None,None,-53,-54,-55,84,84,]),'LT':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,86,86,86,86,-59,-58,86,-46,-57,86,None,-56,None,None,None,None,None,-53,-54,-55,86,86,]),'PLUS':([31,36,48,49,50,51,52,53,54,55,56,57,58,65,69,73,74,75,76,77,78,79,80,82,83,84,85,86,87,88,89,90,95,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[52,52,52,52,52,-60,52,52,-42,-40,-41,52,87,87,87,87,-59,-58,87,-46,52,52,52,52,52,52,52,52,52,52,52,52,52,-57,87,87,-56,87,87,87,87,87,-53,-54,-55,87,87,]),'GET':([13,19,24,26,27,29,33,35,43,47,51,54,55,56,59,61,62,63,69,74,75,77,81,91,98,100,101,102,103,105,106,107,108,109,110,111,112,113,119,],[-1,32,32,32,32,32,32,32,-8,-17,-60,-42,-40,-41,-18,-19,-43,-20,-16,-59,-58,-46,-21,-23,-33,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-22,]),'$end':([2,12,43,],[0,-4,-8,]),'MTEQ':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,79,79,79,79,-59,-58,79,-46,-57,79,None,-56,None,None,None,None,None,-53,-54,-55,79,79,]),'DIVIDE':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,80,80,80,80,-59,-58,80,-46,-57,80,80,-56,80,80,80,80,80,80,80,-55,80,80,]),'ELSE':([43,81,],[-8,104,]),'START':([0,1,3,5,6,8,14,43,],[-61,-2,-6,-61,9,-5,-7,-8,]),'STR':([34,49,95,],[62,62,62,]),'IN':([11,39,],[16,68,]),'COMA':([21,23,37,51,54,55,56,62,70,73,74,75,77,92,94,100,101,102,103,105,106,107,108,109,110,111,112,113,115,117,118,],[39,39,39,-60,-42,-40,-41,-43,95,95,-59,-58,-46,39,39,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,39,95,95,]),'TIMES':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,89,89,89,89,-59,-58,89,-46,-57,89,89,-56,89,89,89,89,89,89,89,-55,89,89,]),'EQ':([30,],[48,]),'ID':([0,5,13,14,16,18,19,20,24,26,27,29,31,32,33,34,35,36,43,47,48,49,50,51,52,53,54,55,56,57,59,61,62,63,67,68,69,74,75,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,93,95,98,100,101,102,103,105,106,107,108,109,110,111,112,113,119,],[4,4,-1,-7,21,23,30,37,30,30,30,30,54,59,30,63,30,54,-8,-17,54,54,54,-60,54,54,-42,-40,-41,54,-18,-19,-43,-20,92,94,-16,-59,-58,-46,54,54,54,-21,54,54,54,54,54,54,54,54,54,-23,115,54,-33,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-22,]),'IF':([13,19,24,26,27,29,33,35,43,47,51,54,55,56,59,61,62,63,69,74,75,77,81,91,98,100,101,102,103,105,106,107,108,109,110,111,112,113,119,],[-1,31,31,31,31,31,31,31,-8,-17,-60,-42,-40,-41,-18,-19,-43,-20,-16,-59,-58,-46,-21,-23,-33,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-22,]),'AND':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,78,78,78,78,-59,-58,78,-46,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,78,78,]),'PUT':([13,19,24,26,27,29,33,35,43,47,51,54,55,56,59,61,62,63,69,74,75,77,81,91,98,100,101,102,103,105,106,107,108,109,110,111,112,113,119,],[-1,34,34,34,34,34,34,34,-8,-17,-60,-42,-40,-41,-18,-19,-43,-20,-16,-59,-58,-46,-21,-23,-33,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-22,]),'INT':([31,36,48,49,50,52,53,57,78,79,80,82,83,84,85,86,87,88,89,90,95,],[55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,55,]),'LTEQ':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,83,83,83,83,-59,-58,83,-46,-57,83,None,-56,None,None,None,None,None,-53,-54,-55,83,83,]),'FLOAT':([31,36,48,49,50,52,53,57,78,79,80,82,83,84,85,86,87,88,89,90,95,],[56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,56,]),'MT':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,85,85,85,85,-59,-58,85,-46,-57,85,None,-56,None,None,None,None,None,-53,-54,-55,85,85,]),'NOT':([31,36,48,49,50,52,53,57,78,79,80,82,83,84,85,86,87,88,89,90,95,],[57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,57,]),'OUT':([11,16,39,68,],[18,20,67,93,]),'OR':([51,54,55,56,58,65,69,73,74,75,76,77,100,101,102,103,105,106,107,108,109,110,111,112,113,118,],[-60,-42,-40,-41,90,90,90,90,-59,-58,90,-46,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,90,]),'LOOP':([13,19,24,26,27,29,33,35,43,47,51,54,55,56,59,61,62,63,69,74,75,77,81,91,98,100,101,102,103,105,106,107,108,109,110,111,112,113,119,],[-1,36,36,36,36,36,36,36,-8,-17,-60,-42,-40,-41,-18,-19,-43,-20,-16,-59,-58,-46,-21,-23,-33,-57,-44,-52,-56,-47,-51,-48,-50,-49,-53,-54,-55,-45,-22,]),}
 
 _lr_action = { }
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'expression':([0,4,6,7,10,11,12,13,],[5,8,14,15,17,18,19,20,]),'statement':([0,],[3,]),}
+_lr_goto_items = {'selection':([19,24,26,27,29,33,35,],[24,24,24,24,24,24,24,]),'statements':([19,24,26,27,29,33,35,],[25,42,44,45,46,60,64,]),'callparams':([30,],[47,]),'add_proc_main':([1,],[6,]),'raplog':([0,],[2,]),'varcte':([31,36,48,49,50,52,53,57,78,79,80,82,83,84,85,86,87,88,89,90,95,],[51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,51,]),'new_scope':([13,],[19,]),'call':([19,24,26,27,29,33,35,],[26,26,26,26,26,26,26,]),'input':([19,24,26,27,29,33,35,],[27,27,27,27,27,27,27,]),'callparams1':([49,],[71,]),'defparams':([7,],[10,]),'callparams2':([70,73,117,118,],[97,99,121,122,]),'defs':([0,5,],[1,8,]),'string':([34,49,95,],[61,70,117,]),'statements-block':([9,10,58,65,104,],[12,14,81,91,119,]),'assignment':([19,24,26,27,29,33,35,],[29,29,29,29,29,29,29,]),'def':([0,5,],[5,5,]),'defparams2':([21,23,37,92,94,115,],[38,41,66,114,116,120,]),'defparams1':([11,],[17,]),'empty':([0,5,11,19,21,23,24,26,27,29,33,35,37,49,70,73,92,94,115,117,118,],[3,3,15,28,40,40,28,28,28,28,28,28,40,72,96,96,40,40,40,96,96,]),'output':([19,24,26,27,29,33,35,],[35,35,35,35,35,35,35,]),'set_proc':([4,],[7,]),'expression':([31,36,48,49,50,52,53,57,78,79,80,82,83,84,85,86,87,88,89,90,95,],[58,65,69,73,74,75,76,77,101,102,103,105,106,107,108,109,110,111,112,113,118,]),'loop':([19,24,26,27,29,33,35,],[33,33,33,33,33,33,33,]),}
 
 _lr_goto = { }
 for _k, _v in _lr_goto_items.items():
@@ -25,15 +25,66 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> statement","S'",1,None,None,None),
-  ('statement -> NAME EQUALS expression','statement',3,'p_statement_assign','calc.py',50),
-  ('statement -> expression','statement',1,'p_statement_expr','calc.py',54),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_binop','calc.py',58),
-  ('expression -> expression MINUS expression','expression',3,'p_expression_binop','calc.py',59),
-  ('expression -> expression TIMES expression','expression',3,'p_expression_binop','calc.py',60),
-  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','calc.py',61),
-  ('expression -> MINUS expression','expression',2,'p_expression_uminus','calc.py',68),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','calc.py',72),
-  ('expression -> NUMBER','expression',1,'p_expression_number','calc.py',76),
-  ('expression -> NAME','expression',1,'p_expression_name','calc.py',80),
+  ("S' -> raplog","S'",1,None,None,None),
+  ('new_scope -> <empty>','new_scope',0,'p_new_scope','parser.py',130),
+  ('add_proc_main -> <empty>','add_proc_main',0,'p_add_proc_main','parser.py',134),
+  ('set_proc -> <empty>','set_proc',0,'p_set_proc','parser.py',140),
+  ('raplog -> defs add_proc_main START statements-block','raplog',4,'p_raplog','parser.py',146),
+  ('defs -> def defs','defs',2,'p_defs','parser.py',149),
+  ('defs -> empty','defs',1,'p_defs','parser.py',150),
+  ('def -> ID set_proc defparams statements-block','def',4,'p_def','parser.py',153),
+  ('statements-block -> LCURLY new_scope statements RCURLY','statements-block',4,'p_statements_block','parser.py',156),
+  ('statements -> assignment statements','statements',2,'p_statements','parser.py',160),
+  ('statements -> call statements','statements',2,'p_statements','parser.py',161),
+  ('statements -> input statements','statements',2,'p_statements','parser.py',162),
+  ('statements -> output statements','statements',2,'p_statements','parser.py',163),
+  ('statements -> selection statements','statements',2,'p_statements','parser.py',164),
+  ('statements -> loop statements','statements',2,'p_statements','parser.py',165),
+  ('statements -> empty','statements',1,'p_statements','parser.py',166),
+  ('assignment -> ID EQ expression','assignment',3,'p_assignment','parser.py',169),
+  ('call -> ID callparams','call',2,'p_call','parser.py',175),
+  ('input -> GET ID','input',2,'p_input','parser.py',178),
+  ('output -> PUT string','output',2,'p_output','parser.py',181),
+  ('output -> PUT ID','output',2,'p_output_id','parser.py',184),
+  ('selection -> IF expression statements-block','selection',3,'p_selection','parser.py',187),
+  ('selection -> IF expression statements-block ELSE statements-block','selection',5,'p_selection','parser.py',188),
+  ('loop -> LOOP expression statements-block','loop',3,'p_loop','parser.py',191),
+  ('defparams -> LPAREN defparams1 RPAREN','defparams',3,'p_defparams','parser.py',194),
+  ('defparams1 -> IN ID defparams2','defparams1',3,'p_defparams1','parser.py',199),
+  ('defparams1 -> OUT ID defparams2','defparams1',3,'p_defparams1','parser.py',200),
+  ('defparams1 -> IN OUT ID defparams2','defparams1',4,'p_defparams1','parser.py',201),
+  ('defparams1 -> empty','defparams1',1,'p_defparams1','parser.py',202),
+  ('defparams2 -> COMA IN ID defparams2','defparams2',4,'p_defparams2','parser.py',207),
+  ('defparams2 -> COMA OUT ID defparams2','defparams2',4,'p_defparams2','parser.py',208),
+  ('defparams2 -> COMA IN OUT ID defparams2','defparams2',5,'p_defparams2','parser.py',209),
+  ('defparams2 -> empty','defparams2',1,'p_defparams2','parser.py',210),
+  ('callparams -> LPAREN callparams1 RPAREN','callparams',3,'p_callparams','parser.py',215),
+  ('callparams1 -> expression callparams2','callparams1',2,'p_callparams1','parser.py',218),
+  ('callparams1 -> string callparams2','callparams1',2,'p_callparams1','parser.py',219),
+  ('callparams1 -> empty','callparams1',1,'p_callparams1','parser.py',220),
+  ('callparams2 -> COMA expression callparams2','callparams2',3,'p_callparams2','parser.py',223),
+  ('callparams2 -> COMA string callparams2','callparams2',3,'p_callparams2','parser.py',224),
+  ('callparams2 -> empty','callparams2',1,'p_callparams2','parser.py',225),
+  ('varcte -> INT','varcte',1,'p_varcte_number','parser.py',228),
+  ('varcte -> FLOAT','varcte',1,'p_varcte_number','parser.py',229),
+  ('varcte -> ID','varcte',1,'p_varcte_id','parser.py',233),
+  ('string -> STR','string',1,'p_string','parser.py',245),
+  ('expression -> expression AND expression','expression',3,'p_expression_boolean','parser.py',263),
+  ('expression -> expression OR expression','expression',3,'p_expression_boolean','parser.py',264),
+  ('expression -> NOT expression','expression',2,'p_expression_boolean','parser.py',265),
+  ('expression -> expression EQEQ expression','expression',3,'p_expression_comparison','parser.py',268),
+  ('expression -> expression NE expression','expression',3,'p_expression_comparison','parser.py',269),
+  ('expression -> expression LT expression','expression',3,'p_expression_comparison','parser.py',270),
+  ('expression -> expression MT expression','expression',3,'p_expression_comparison','parser.py',271),
+  ('expression -> expression LTEQ expression','expression',3,'p_expression_comparison','parser.py',272),
+  ('expression -> expression MTEQ expression','expression',3,'p_expression_comparison','parser.py',273),
+  ('expression -> expression PLUS expression','expression',3,'p_expression_arithmetic','parser.py',276),
+  ('expression -> expression MINUS expression','expression',3,'p_expression_arithmetic','parser.py',277),
+  ('expression -> expression TIMES expression','expression',3,'p_expression_arithmetic','parser.py',278),
+  ('expression -> expression DIVIDE expression','expression',3,'p_expression_arithmetic','parser.py',279),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','parser.py',282),
+  ('expression -> PLUS expression','expression',2,'p_expression_uplus','parser.py',286),
+  ('expression -> MINUS expression','expression',2,'p_expression_uminus','parser.py',290),
+  ('expression -> varcte','expression',1,'p_expression_element','parser.py',294),
+  ('empty -> <empty>','empty',0,'p_empty','parser.py',298),
 ]

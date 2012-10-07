@@ -1,21 +1,25 @@
 fibonacci(in n, out f) {
-    if n >= 2
+    if n > 2
     {
+    	f1 = 0
+    	f2 = 0
     	fibonacci(n - 1, f1)
     	fibonacci(n - 2, f2)
     	f = f1 + f2
     } else {
-    	f = n
+    	f = 1
     }
 }
 
-factorial(in n, out f)
+factorial(in n, out f) {
 	if n <= 1
 	{
 		f = n
 	} else {
+		f1 = 0
 		factorial(n - 1, f1)
 		f = f * f1
+		variable1 = 2
 	}
 }
 
@@ -26,12 +30,14 @@ start {
 	put "secuencia fibonacci hasta el 10° numero"
 	i = 1
 	loop i <= 10 {
+		res = 0
 		fibonacci(i, res)
-		put res+", "
+		put res
+		put ", "
 		i = i + 1
 	}
-	
-	
+	res = 0
 	factorial(10, res)
-	put "factorial de 10 es "+res
+	put "factorial de 10 es "
+	put res
 }
