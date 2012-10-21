@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # file parser.py
 import sys
+import lex
+import yacc
+import symtable
 
-error = False
+errors = []
 
 # Reserved words
 reserved = {
-   'start' : 'START',
    'if' : 'IF',
    'else' : 'ELSE',
    'loop' : 'LOOP',
@@ -87,13 +89,11 @@ def t_newline(t):
 	t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
-	print("Illegal character '{}' at line {}".format(t.value[0], t.lineno))
-	global error
-	error = True
+	global errors
+	errors.append("Illegal character '{}' at line {}".format(t.value[0], t.lineno))
 	t.lexer.skip(1)
 
 # Build the lexer 
-import lex
 lex.lex()
 '''
 lex.input(open(sys.argv[1], 'r').read())
@@ -115,67 +115,58 @@ precedence = (
     ('right','UMINUS')
 )
 
-# tabla de variable
-var_table = { }
-scopes = [ ]
-
-# tabla de procedimientos
-proc_table = { }
-current_proc = 'program'
 
 start = 'raplog'
 
-def pop_scope():
-    var_table = scopes.pop()
-
+# Semantic rules
 def p_new_scope(p):
     "new_scope :"
-    scopes.append(var_table)
+    symtable.new_scope()
 
 def p_add_proc_main(p):
     'add_proc_main :'
-    global current_proc
-    current_proc = 'main'
-    proc_table[current_proc] = {}
+    symtable.add_proc('main')
 
-def p_set_proc(p):
-    'set_proc :'
-    global current_proc
-    current_proc = p[-1]
-    proc_table[current_proc] = {}
+def p_add_proc(p):
+    'add_proc :'
+    # TODO: pasar el tipo que regresa y los parametros
+    symtable.add_proc(p[-1], None, None)
+# Semantic rules end
 
 def p_raplog(p):
-    'raplog : defs add_proc_main START statements-block'
+    '''raplog : assignment raplog
+              | function raplog
+              | empty'''
 
-def p_defs(p):
-    '''defs : def defs 
-            | empty'''
-
-def p_def(p):
-    'def : ID set_proc defparams statements-block'
+def p_function(p):
+    'function : ID add_proc defparams statements-block'
+    symtable.end_current_proc()
 
 def p_statements_block(p):
     'statements-block : LCURLY new_scope statements RCURLY'
-    pop_scope()        # Return to previous scope
+    symtable.pop_scope()
 
 def p_statements(p):
-    '''statements : assignment statements 
-                  | call statements
-                  | input statements
-                  | output statements
-                  | selection statements
-                  | loop statements
+    '''statements : statement statements
                   | empty'''
+
+def p_statement(p):
+    '''statement : assignment 
+                 | call
+                 | input
+                 | output
+                 | selection
+                 | loop'''
 
 def p_assignment(p):
     '''assignment : ID EQ expression
                   | ID EQ array'''
-    var_table[p[1]] = p[3]
-    #print 'ID: {}, Proc: {}'.format(p[1], current_proc)
-    proc_table[current_proc][p[1]] = p[3]
+    symtable.add_var(p[1], type(p[3]), p[3])
 
 def p_call(p):
     'call : ID callparams'
+    p[0] = symtable.get_proc(p[1])
+    # TODO: checar existencia y manejar parametros
 
 def p_input(p):
     'input : GET ID'
@@ -191,25 +182,19 @@ def p_loop(p):
     'loop : LOOP expression statements-block'
 
 def p_defparams(p):
-    'defparams : LPAREN defparams1 RPAREN'
-
-# para las defparams hay que agregar el caso en el que esten ambas palabras in y out
+    '''defparams : LPAREN defparams1 RPAREN
+                 | LPAREN RPAREN'''
 
 def p_defparams1(p):
-    '''defparams1 : IN ID defparams2 
-                  | OUT ID defparams2 
-                  | IN OUT ID defparams2 
-                  | empty'''
-    var_table[p[2]] = 0
-    proc_table[current_proc][p[2]] = 0
+    '''defparams1 : param_type ID 
+                  | param_type ID COMA defparams1'''
+    # TODO: determinar si si es aceptable el IN OUT ID
+    # TODO: assignar el valor correcto de los parametros
+    symtable.add_var(p[2], 'int', 0)
 
-def p_defparams2(p):
-    '''defparams2 : COMA IN ID defparams2 
-                  | COMA OUT ID defparams2 
-                  | COMA IN OUT ID defparams2 
-                  | empty'''
-    #var_table[p[3]] = 0
-    #proc_table[current_proc][p[3]] = 0
+def p_param_type(p):
+    '''param_type : IN
+                  | OUT'''
 
 def p_callparams(p):
     'callparams : LPAREN callparams1 RPAREN'
@@ -231,29 +216,11 @@ def p_varcte_constant(p):
 def p_varcte_id(p):
     '''varcte : ID
               | ID array_index'''
-    try:
-        #p[0] = var_table[p[1]]
-        p[0] = proc_table[current_proc][p[1]]
-        #print("using: {}, scope: {}".format(p[1], var_table))
-    except LookupError:
-        print("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
-        global error
-        error = True
-        p[0] = 0
-
-'''
-def p_string_converter(p):
-    'string : expression'
-    p[0] = str(p[1])
-
-def p_string_concatenation(p):
-    'string : STR PLUS string'
-    p[0] = p[1] + p[3]
-
-def p_string_converter_concatenation(p):
-    'string : expression PLUS string'
-    p[0] = str(p[1]) + p[3]
-'''
+    # TODO: validacion apropiada para arreglos
+    p[0] = symtable.get_var(p[1])
+    if not p[0]:
+        global errors
+        errors.append("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
 
 def p_expression_boolean(p):
     '''expression : expression AND expression
@@ -294,9 +261,8 @@ def p_array_index(p):
     '''array_index : LBRACK expression RBRACK
                    | LBRACK expression RBRACK array_index'''
     if not isinstance(p[2], (int, long)):
-        global error
-        error = True
-        print 'Wrong index type at line {}, indexes must be integers'.format(p.lineno(1))
+        global errors
+        errors.append('Wrong index type at line {}, indexes must be integers'.format(p.lineno(1)))
 
 def p_array(p):
     '''array : LBRACK array_elements RBRACK
@@ -311,14 +277,22 @@ def p_empty(p):
     pass
 
 def p_error(t):
-	print("Syntax error at line {}, near {}".format(t.lineno, t.value))
-	global error
-	error = True
+	global errors
+	errors.append("Syntax error at line {}, near {}".format(t.lineno, t.value))
 
-import yacc
+# Build the parser
 yacc.yacc()
 
-f = open(sys.argv[1], 'r')
-yacc.parse(f.read())
-if not error:
-    print("program has no errors")
+# Parse input file
+if (len(sys.argv) <= 1):
+    print('No file specified, exiting now')
+else:
+    f = open(sys.argv[1], 'r')
+    yacc.parse(f.read())
+    if len(errors) > 0:
+        print 'found '+str(len(errors))+' errors:'
+        for error in errors:
+            print '    '+error
+    else:
+        print('Program has no errors')
+

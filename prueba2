@@ -23,7 +23,7 @@ factorial(in n, out f) {
 	}
 }
 
-start {
+start (){
 	_asd123ASD = 1
 	ABC_DEF = 2
 	_______ = 3 # segun sintaxis esto es un id aceptable
