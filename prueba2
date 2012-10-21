@@ -23,6 +23,8 @@ factorial(in n, out f) {
 	}
 }
 
+a = 1
+
 start (){
 	_asd123ASD = 1
 	ABC_DEF = 2

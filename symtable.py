@@ -7,7 +7,7 @@ scopes = [ ]
 
 # tabla de procedimientos
 # format = {function : [return_type, parameters, var_table]}
-proc_table = {'program' : [None, None, var_table]}
+proc_table = {'program' : (None, None, var_table)}
 current_proc = 'program'
 
 
@@ -34,12 +34,11 @@ def end_current_proc():
     var_table = proc_table['program'][2]
 
 # adds a variable to current proc
-# t stands for type
-def add_var(name, t, value):
+def add_var(name, type, value):
     #print ("adding {"+name+": ["+str(t)+", "+str(value)+"]") 
     global current_proc
     global var_table
-    var_table[name] = [t, value]
+    var_table[name] = (type, value)
 
 def get_proc(proc):
     if proc in proc_table:

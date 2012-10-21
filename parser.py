@@ -4,6 +4,7 @@ import sys
 import lex
 import yacc
 import symtable
+import codegen
 
 errors = []
 
@@ -135,20 +136,31 @@ def p_add_proc(p):
 
 def p_raplog(p):
     '''raplog : assignment raplog
-              | function raplog
-              | empty'''
+              | function raplog'''
+    p[0] = [p[1]] + p[2]
+    
+def p_raplog_empty(p):
+    'raplog : empty'
+    p[0] = []
 
 def p_function(p):
     'function : ID add_proc defparams statements-block'
     symtable.end_current_proc()
+    # TODO: hacer algo con defparams
+    p[0] = p[4]
 
 def p_statements_block(p):
     'statements-block : LCURLY new_scope statements RCURLY'
     symtable.pop_scope()
+    p[0] = p[3]
 
 def p_statements(p):
-    '''statements : statement statements
-                  | empty'''
+    'statements : statement statements'
+    p[0] = [p[1]] + p[2]
+
+def p_statements_empty(p):
+    'statements : empty'
+    p[0] = []
 
 def p_statement(p):
     '''statement : assignment 
@@ -157,75 +169,104 @@ def p_statement(p):
                  | output
                  | selection
                  | loop'''
+    p[0] = p[1]
 
 def p_assignment(p):
     '''assignment : ID EQ expression
                   | ID EQ array'''
-    symtable.add_var(p[1], type(p[3]), p[3])
+    # TODO: asignar bien el tipo de variable
+    symtable.add_var(p[1], None, p[3])
+    # TODO: generar codigo para arreglos
+    p[0] = codegen.Node(p[2], codegen.Node(p[1], None, None), p[3])
 
 def p_call(p):
     'call : ID callparams'
-    p[0] = symtable.get_proc(p[1])
+    symtable.get_proc(p[1])
+    p[0] = codegen.Node(p[1], None, None)
     # TODO: checar existencia y manejar parametros
 
 def p_input(p):
     'input : GET ID'
+    p[0] = codegen.Node('scan', codegen.Node(p[2], None, None), None)
 
 def p_output(p):
     'output : PUT expression'
+    p[0] = codegen.Node('print', p[2], None)
 
 def p_selection(p):
-    '''selection : IF expression statements-block
-                 | IF expression statements-block ELSE statements-block'''
+    'selection : IF expression statements-block'
+    p[0] = codegen.Node(p[1], p[2], p[3])
+
+def p_selection_else(p):
+    'selection : IF expression statements-block ELSE statements-block'
+    p[0] = codegen.Node(p[1], p[2], codegen.Node(p[4], p[3], p[5]))
 
 def p_loop(p):
     'loop : LOOP expression statements-block'
+    p[0] = codegen.Node('while', p[2], p[3])
 
 def p_defparams(p):
     '''defparams : LPAREN defparams1 RPAREN
                  | LPAREN RPAREN'''
+    # TODO: generacion de codigo
 
 def p_defparams1(p):
     '''defparams1 : param_type ID 
                   | param_type ID COMA defparams1'''
-    # TODO: determinar si si es aceptable el IN OUT ID
+    # TODO: determinar si si es aceptable el IN OUT ID, por ahora no es aceptado
     # TODO: assignar el valor correcto de los parametros
     symtable.add_var(p[2], 'int', 0)
+    # TODO: generacion de codigo
 
 def p_param_type(p):
     '''param_type : IN
                   | OUT'''
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_callparams(p):
     'callparams : LPAREN callparams1 RPAREN'
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_callparams1(p):
     '''callparams1 : expression callparams2 
                    | empty'''
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_callparams2(p):
     '''callparams2 : COMA expression callparams2 
                    | empty'''
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_varcte_constant(p):
     '''varcte : INT 
               | FLOAT
               | STR'''
-    p[0] = p[1]
+    p[0] = codegen.Node(p[1], None, None)
 
 def p_varcte_id(p):
     '''varcte : ID
               | ID array_index'''
     # TODO: validacion apropiada para arreglos
-    p[0] = symtable.get_var(p[1])
-    if not p[0]:
+    # TODO: uso apropiado de id en el nodo
+    if not symtable.get_var(p[1]):
         global errors
         errors.append("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
+    p[0] = codegen.Node(p[1], None, None)
 
+# TODO: las reglas estan separadas por si acaso se agrega el campo 'type' en los nodos,
+#       tambien porque no estoy seguro de como se vaya a implementar el cubo semantico
 def p_expression_boolean(p):
     '''expression : expression AND expression
-                  | expression OR expression
-                  | NOT expression'''
+                  | expression OR expression'''
+    p[0] = codegen.Node(p[2], p[1], p[3])
+
+def p_expression_boolean_not(p):
+    '''expression : NOT expression'''
+    p[0] = codegen.Node(p[1], p[2], None)
 
 def p_expression_comparison(p):
     '''expression : expression EQEQ expression
@@ -234,12 +275,14 @@ def p_expression_comparison(p):
                   | expression MT expression
                   | expression LTEQ expression
                   | expression MTEQ expression'''
+    p[0] = codegen.Node(p[2], p[1], p[3])
 
 def p_expression_arithmetic(p):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression'''
+    p[0] = codegen.Node(p[2], p[1], p[3])
 
 def p_expression_group(p):
     'expression : LPAREN expression RPAREN'
@@ -251,7 +294,7 @@ def p_expression_uplus(p):
 
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
-    p[0] = -p[2]
+    p[0] = codegen.Node('uminus', p[2], None)
 
 def p_expression_element(p):
     'expression : varcte'
@@ -260,17 +303,24 @@ def p_expression_element(p):
 def p_array_index(p):
     '''array_index : LBRACK expression RBRACK
                    | LBRACK expression RBRACK array_index'''
-    if not isinstance(p[2], (int, long)):
-        global errors
-        errors.append('Wrong index type at line {}, indexes must be integers'.format(p.lineno(1)))
+    # TODO: creo que la validacion de indices no va aqui
+    #if not isinstance(p[2], (int, long)):
+    #    global errors
+    #    errors.append('Wrong index type at line {}, indexes must be integers'.format(p.lineno(1)))
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_array(p):
     '''array : LBRACK array_elements RBRACK
              | LBRACK RBRACK'''
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_array_elements(p):
     '''array_elements : expression
                       | expression COMA array_elements'''
+    # TODO: generacion de codigo
+    p[0] = []
 
 def p_empty(p):
     'empty :'
@@ -288,11 +338,14 @@ if (len(sys.argv) <= 1):
     print('No file specified, exiting now')
 else:
     f = open(sys.argv[1], 'r')
-    yacc.parse(f.read())
+    result = yacc.parse(f.read())
     if len(errors) > 0:
         print 'found '+str(len(errors))+' errors:'
         for error in errors:
             print '    '+error
     else:
         print('Program has no errors')
+        for a in result:
+            print str(a)
+        print codegen.gen_vp(result)
 
