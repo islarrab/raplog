@@ -2,7 +2,8 @@ start {
 	a = 1
 	b = 2
 	c = 3
-	
+	array = [0, 1, 2, 3]
+	testingArray = array[1]
 	put "Esto es un output! yay! dame un valor:"
 	get d
 	

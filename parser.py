@@ -22,7 +22,7 @@ reserved = {
 tokens = list(reserved.values()) + [
 	'PLUS','MINUS','TIMES','DIVIDE',
 	'EQ','EQEQ','NE','LT','MT','LTEQ','MTEQ',
-	'LPAREN','RPAREN','LCURLY','RCURLY','COMA',
+	'LPAREN','RPAREN','LCURLY','RCURLY','LBRACK','RBRACK','COMA',
 	'INT','FLOAT','STR','ID'
 ]
 
@@ -42,6 +42,8 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LCURLY = r'\{'
 t_RCURLY = r'\}'
+t_LBRACK = r'\['
+t_RBRACK = r'\]'
 t_COMA = r','
 #t_NOT = r'(not|NOT|!)'
 #t_AND = r'(and|AND|&&)'
@@ -49,7 +51,7 @@ t_COMA = r','
 t_STR = r'".*"'
 
 def t_INT(t):
-	'r[0-9]+'
+	r'[0-9]+'
 	try:
 		t.value = int(t.value)
 	except ValueError:
@@ -85,7 +87,7 @@ def t_newline(t):
 	t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
-	print("Illegal character '%s'" % t.value[0])
+	print("Illegal character '{}' at line {}".format(t.value[0], t.lineno))
 	global error
 	error = True
 	t.lexer.skip(1)
@@ -113,7 +115,7 @@ precedence = (
     ('right','UMINUS')
 )
 
-# tabla de variables
+# tabla de variable
 var_table = { }
 scopes = [ ]
 
@@ -166,7 +168,8 @@ def p_statements(p):
                   | empty'''
 
 def p_assignment(p):
-    'assignment : ID EQ expression'
+    '''assignment : ID EQ expression
+                  | ID EQ array'''
     var_table[p[1]] = p[3]
     #print 'ID: {}, Proc: {}'.format(p[1], current_proc)
     proc_table[current_proc][p[1]] = p[3]
@@ -178,10 +181,7 @@ def p_input(p):
     'input : GET ID'
 
 def p_output(p):
-    'output : PUT string'
-    
-def p_output_id(p):
-    'output : PUT ID'
+    'output : PUT expression'
 
 def p_selection(p):
     '''selection : IF expression statements-block
@@ -216,21 +216,21 @@ def p_callparams(p):
 
 def p_callparams1(p):
     '''callparams1 : expression callparams2 
-                   | string callparams2 
                    | empty'''
 
 def p_callparams2(p):
     '''callparams2 : COMA expression callparams2 
-                   | COMA string callparams2 
                    | empty'''
 
-def p_varcte_number(p):
+def p_varcte_constant(p):
     '''varcte : INT 
-              | FLOAT'''
+              | FLOAT
+              | STR'''
     p[0] = p[1]
 
 def p_varcte_id(p):
-    'varcte : ID'
+    '''varcte : ID
+              | ID array_index'''
     try:
         #p[0] = var_table[p[1]]
         p[0] = proc_table[current_proc][p[1]]
@@ -240,10 +240,6 @@ def p_varcte_id(p):
         global error
         error = True
         p[0] = 0
-
-def p_string(p):
-    'string : STR'
-    p[0] = p[1]
 
 '''
 def p_string_converter(p):
@@ -293,6 +289,22 @@ def p_expression_uminus(p):
 def p_expression_element(p):
     'expression : varcte'
     p[0] = p[1]
+
+def p_array_index(p):
+    '''array_index : LBRACK expression RBRACK
+                   | LBRACK expression RBRACK array_index'''
+    if not isinstance(p[2], (int, long)):
+        global error
+        error = True
+        print 'Wrong index type at line {}, indexes must be integers'.format(p.lineno(1))
+
+def p_array(p):
+    '''array : LBRACK array_elements RBRACK
+             | LBRACK RBRACK'''
+
+def p_array_elements(p):
+    '''array_elements : expression
+                      | expression COMA array_elements'''
 
 def p_empty(p):
     'empty :'
