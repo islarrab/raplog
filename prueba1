@@ -14,7 +14,7 @@ start () {
 		put "a*b > a+c es falso!"
 	}
 	
-	loop a<c
+	while a<c
 	{
 		a = a + 1
 		put "a"

@@ -1,0 +1,8 @@
+prueba() {
+	a = 1
+	c = 2
+	while(a<c) {
+		put a
+		a = a + 1
+	}
+}

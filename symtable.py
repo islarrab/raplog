@@ -62,7 +62,7 @@ def has(name):
 
 def print_symtable():
     for proc in proc_table:
-        print '{'+proc+' : '+str(proc_table[proc])+'}'
+        print ('{'+proc+' : '+str(proc_table[proc])+'}')
 
 '''
 add_var('var1', 'float', 1.23)
