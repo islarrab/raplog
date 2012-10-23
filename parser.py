@@ -369,4 +369,4 @@ else:
         print(result)
         vp = codegen.gen_incode(result)
         print(str(vp))
-        codegen.write_to_file(vp, sys.argv[1].split('.')[0]+'.rpo')
+        codegen.write_to_file(vp, sys.argv[1].split('.')[0]+'.rlo')
