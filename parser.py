@@ -7,6 +7,7 @@ import symtable
 import codegen
 
 errors = []
+lineno = 0
 
 # Reserved words
 reserved = {
@@ -87,10 +88,12 @@ t_ignore_COMMENT = r'\#.*'
 
 def t_newline(t):
 	r'\n+'
+	#global lineno
 	t.lexer.lineno += t.value.count("\n")
+	global lineno
+	lineno += t.value.count("\n")
 
 def t_error(t):
-	global errors
 	errors.append("Illegal character '{}' at line {}".format(t.value[0], t.lineno))
 	t.lexer.skip(1)
 
@@ -108,10 +111,10 @@ while 1:
 precedence = (
     ('left','OR'),
     ('left','AND'),
+    ('right','NOT'),
     ('nonassoc','EQEQ','NE','LT','MT','LTEQ','MTEQ'),
     ('left','PLUS','MINUS'), 
     ('left','TIMES','DIVIDE'), 
-    ('right','NOT'),
     ('right','UPLUS'),
     ('right','UMINUS')
 )
@@ -133,30 +136,24 @@ def p_add_proc(p):
 def p_raplog(p):
     '''raplog : assignment raplog
               | function raplog'''
-    p[0] = [p[1]] + p[2]
     
 def p_raplog_empty(p):
     'raplog : empty'
-    p[0] = []
 
 def p_function(p):
     'function : ID add_proc defparams statements-block'
     symtable.end_current_proc()
     # TODO: hacer algo con defparams
-    p[0] = p[4]
 
 def p_statements_block(p):
     'statements-block : LCURLY new_scope statements RCURLY'
     symtable.pop_scope()
-    p[0] = p[3]
 
 def p_statements(p):
     'statements : statement statements'
-    p[0] = [p[1]] + p[2]
 
 def p_statements_empty(p):
     'statements : empty'
-    p[0] = []
 
 def p_statement(p):
     '''statement : assignment 
@@ -165,47 +162,87 @@ def p_statement(p):
                  | output
                  | selection
                  | while'''
-    p[0] = p[1]
 
 def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
-    # TODO: revisar bien porque usar p[3].type en vez de type(p[3]) marca error
-    symtable.add_var(p[1], type(p[3]), p[3])
-    p[0] = codegen.Node('assignment', p[2], codegen.Node(type(p[3]), p[1], None, None), p[3])
+    exp_res = codegen.opdos.pop()
+    # TODO: arreglar uso de 'dir'
+    print exp_res
+    var = symtable.add_var(p[1], exp_res['type'], exp_res['dir'])
+    codegen.gen_quad('=', exp_res['dir'], '', var['dir'])
 
 def p_assignment_array(p):
     '''assignment : ID EQ array'''
-    symtable.add_var(p[1], list, p[3])
-    p[0] = codegen.Node('assignment', p[2], codegen.Node(list, p[1], None, None), p[3])
+    # TODO: como se manejan los arreglos en cuadruplos?
 
 def p_call(p):
-    'call : ID callparams'
-    symtable.get_proc(p[1])
+    'call : ID LPAREN callparams RPAREN'
+    proc = symtable.get_proc(p[1])
+    if not proc:
+        errors.append("Call to an undefined function '{}' at line {}".format(p[1], p.lineno(1)))
     p[0] = codegen.Node('call', p[1], None, None)
     # TODO: checar existencia y manejar parametros
 
 def p_input(p):
     'input : GET ID'
-    if not symtable.has(p[2]):
+    var = symtable.get_var(p[2])
+    if not var:
       # TODO: es posible que se necesite agregar el tipo de una vez
-      symtable.add_var(p[2], None, None)
-    p[0] = codegen.Node('input', 'scan', codegen.Node(p[2], None, None), None)
+      var = symtable.add_var(p[2], None, None)
+    codegen.gen_quad('scan', '', '', var['dir'])
 
 def p_output(p):
     'output : PUT expression'
-    p[0] = codegen.Node('output', 'print', p[2], None)
+    aux = codegen.opdos.pop()
+    codegen.gen_quad('print', aux['dir'], '', '')
 
 def p_selection(p):
-    'selection : IF expression statements-block'
-    p[0] = codegen.Node('if', p[1], p[2], p[3])
+    'selection : IF expression i1 statements-block i3'
 
 def p_selection_else(p):
-    'selection : IF expression statements-block ELSE statements-block'
-    p[0] = codegen.Node('if', p[1], p[2], codegen.Node('else', p[4], p[3], p[5]))
+    'selection : IF expression i1 statements-block ELSE i2 statements-block i3'
+
+def p_i1(p):
+    'i1 :'
+    aux = codegen.opdos.pop()
+    if (aux['type'] != bool):
+        errors.append('expression must be boolean, at line {}'.format(lineno))
+    codegen.gen_quad('gotof', aux['dir'], '', '')
+    codegen.jumps.append(codegen.curr_ins)
+
+def p_i2(p):
+    'i2 :'
+    codegen.gen_quad('goto', '', '', '')
+    i = codegen.jumps.pop()
+    codegen.quads[i][3] = codegen.curr_ins+1
+    codegen.jumps.append(codegen.curr_ins)
+
+def p_i3(p):
+    'i3 :'
+    i = codegen.jumps.pop()
+    codegen.quads[i][3] = codegen.curr_ins+1
 
 def p_while(p):
-    'while : WHILE expression statements-block'
-    p[0] = codegen.Node('while', 'while', p[2], p[3])
+    'while : WHILE w1 expression w2 statements-block w3'
+
+def p_w1(p):
+    'w1 :'
+    codegen.jumps.append(codegen.curr_ins+1)
+
+def p_w2(p):
+    'w2 :'
+    aux = codegen.opdos.pop()
+    if (aux['type'] != bool):
+        errors.append('expresion must be boolean, at line {}'.format(lineno))
+    codegen.gen_quad('gotof', aux['dir'], '', '')
+    codegen.jumps.append(codegen.curr_ins)
+    
+def p_w3(p):
+    'w3 :'
+    gotof_index = codegen.jumps.pop()
+    beginning_index = codegen.jumps.pop()
+    codegen.gen_quad('goto', '', '', beginning_index)
+    codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
 def p_defparams(p):
     '''defparams : LPAREN defparams1 RPAREN
@@ -224,34 +261,26 @@ def p_param_type(p):
     '''param_type : IN
                   | OUT'''
     # TODO: generacion de codigo
-    p[0] = []
 
 def p_callparams(p):
-    'callparams : LPAREN callparams1 RPAREN'
+    '''callparams : callparams1
+                  | empty'''
     # TODO: generacion de codigo
-    p[0] = []
 
 def p_callparams1(p):
-    '''callparams1 : expression callparams2 
-                   | empty'''
+    '''callparams1 : expression COMA callparams1
+                   | expression'''
     # TODO: generacion de codigo
-    p[0] = []
-
-def p_callparams2(p):
-    '''callparams2 : COMA expression callparams2 
-                   | empty'''
-    # TODO: generacion de codigo
-    p[0] = []
 
 # TODO: hacer uso del cubo semantico en las expresiones
 def p_expression_boolean(p):
     '''expression : expression AND expression
                   | expression OR expression'''
-    p[0] = codegen.Node(bool, p[2], p[1], p[3])
+    codegen.binop(p[2])
 
 def p_expression_boolean_not(p):
     '''expression : NOT expression'''
-    p[0] = codegen.Node(bool, p[1], p[2], None)
+    codegen.unop(p[1])
 
 def p_expression_comparison(p):
     '''expression : expression EQEQ expression
@@ -260,61 +289,56 @@ def p_expression_comparison(p):
                   | expression MT expression
                   | expression LTEQ expression
                   | expression MTEQ expression'''
-    p[0] = codegen.Node(bool, p[2], p[1], p[3])
+    codegen.binop(p[2])
 
 def p_expression_arithmetic(p):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression'''
-    p[0] = codegen.Node(None, p[2], p[1], p[3])
+    codegen.binop(p[2])
 
 def p_expression_group(p):
     'expression : LPAREN expression RPAREN'
-    p[0] = p[2]
+    # TODO: checar bien si se necesita meter el fondo falso
 
 def p_expression_uplus(p):
     'expression : PLUS expression %prec UPLUS'
-    p[0] = p[2]
+    codegen.unop('uminus')
 
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
-    p[0] = codegen.Node(p[2].type, 'uminus', p[2], None)
+    codegen.unop('uminus')
 
 def p_expression_element(p):
     'expression : varcte'
-    p[0] = p[1]
+    codegen.opdos.append(p[1])
 
 def p_varcte_constant(p):
     '''varcte : INT 
               | FLOAT
               | STRING'''
-    p[0] = codegen.Node('leaf', p[1], None, None)
+    p[0] = symtable.get_constant(p[1])
 
 def p_varcte_id(p):
     '''varcte : ID'''
-    # TODO: uso apropiado de id en el nodo
     var = symtable.get_var(p[1])
     if not var:
-        global errors
         errors.append("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
     else:
-        p[0] = codegen.Node(var[0], p[1], None, None)
+        p[0] = var
 
 def p_varcte_id_array(p):
     '''varcte : ID array_index'''
-    # TODO: validacion apropiada para arreglos
     # TODO: uso apropiado de id en el nodo
     var = symtable.get_var(p[1])
-    global errors
     if not var:
         errors.append("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
-    elif var[0] != list:
+    elif var['type'] != list:
         errors.append("Variable '{}' is not an array, at line {}".format(p[1], p.lineno(1)))
-    # TODO: una vez que se arregle la definicion de arreglos hay que sacar el valor
-    # que este en p[2]
-    p[0] = codegen.Node(var[0], p[1], None, None)
-
+    # TODO: una vez que se arregle la definicion de arreglos hay que 
+    # sacar el valor que este en p[2]
+    p[0] = var
 
 def p_array_index(p):
     '''array_index : LBRACK expression RBRACK
@@ -327,27 +351,25 @@ def p_array_index(p):
 
 def p_array(p):
     '''array : LBRACK array_elements RBRACK'''
-    #p[0] = codegen.Node(list, p[2], None, None)
-    p[0] = codegen.Node('array', p[2], None, None)
+    # TODO: parche temporal, hay que arreglar el uso de arreglos
+    codegen.opdos.append({'dir':'array', 'type': list})
 
 def p_array_empty(p):
     '''array : LBRACK RBRACK'''
-    p[0] = codegen.Node(list, [], None, None)
+    # TODO: igual que arriba
+    codegen.opdos.append({'dir':'array', 'type': list})
 
 def p_array_elements(p):
     '''array_elements : expression'''
-    p[0] = [p[1]]
 
 def p_array_elements_2(p):
     '''array_elements : expression COMA array_elements'''
-    p[0] = [p[1]] + p[3]
 
 def p_empty(p):
     'empty :'
     pass
 
 def p_error(t):
-	global errors
 	errors.append("Syntax error at line {}, near {}".format(t.lineno, t.value))
 
 # Build the parser
@@ -358,7 +380,9 @@ if (len(sys.argv) <= 1):
     print('No file specified, exiting now')
 else:
     f = open(sys.argv[1], 'r')
-    result = yacc.parse(f.read())
+    yacc.parse(f.read())
+    for quad in codegen.quads:
+      print(quad)
     if len(errors) > 0:
         print('found '+str(len(errors))+' errors:')
         for error in errors:
@@ -366,7 +390,4 @@ else:
     else:
         print('Program has no errors')
         #codegen.print_ast(result)
-        print(result)
-        vp = codegen.gen_incode(result)
-        print(str(vp))
         codegen.write_to_file(vp, sys.argv[1].split('.')[0]+'.rlo')

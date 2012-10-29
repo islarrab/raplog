@@ -2,11 +2,23 @@
 # file symtable.py
 
 # variable table
+'''
+una variable tiene el formato {'dir': x, 'type': y, 'value': z}
+por lo tanto var_table tiene el formato:
+{  {var1: {'dir': x1, 'type': y1, 'value': z1},
+   ...
+   {varN: {'dir': xN, 'type': yN, 'value': zN} }
+'''
 var_table = { }
 scopes = [ ]
 
+# formato: {valor : {'dir':dir, 'type':type}}
+constants = { }
+
 # tabla de procedimientos
-# format = {function : [return_type, parameters, var_table]}
+# format = {function : (return_type, parameters, var_table)}
+# TODO: falta tamano y dir
+RETURN_TYPE = 0; PARAMETERS = 1; VAR_TABLE = 2
 proc_table = {'program' : (None, None, var_table)}
 current_proc = 'program'
 
@@ -33,12 +45,13 @@ def end_current_proc():
     current_proc = 'program'
     var_table = proc_table['program'][2]
 
-# adds a variable to current proc
 def add_var(name, type, value):
-    #print ("adding {"+name+": ["+str(t)+", "+str(value)+"]") 
-    global current_proc
     global var_table
-    var_table[name] = (type, value)
+    var = { 'dir': name, # TODO: asignar bien la direccion virtual
+            'type': type,
+            'value': value}
+    var_table[name] = var
+    return var
 
 def get_proc(proc):
     if proc in proc_table:
@@ -47,26 +60,23 @@ def get_proc(proc):
         return None
 
 def get_var(name):
-    if (name in proc_table[current_proc][2]):
-        return proc_table[current_proc][2][name]
-    if (name in proc_table['program'][2]):
-        return proc_table['program'][2][name]
+    if (name in proc_table[current_proc][VAR_TABLE]):
+        return proc_table[current_proc][VAR_TABLE][name]
+    if (name in proc_table['program'][VAR_TABLE]):
+        return proc_table['program'][VAR_TABLE][name]
     return None
 
-# looks up the variable in the global and current local scopes, returns boolean
-def has(name):
-    if (name in proc_table['program'][2] or name in proc_table[current_proc][2]):
-        return True
+def get_constant(value):
+    if value in constants:
+        return constants[value]
     else:
-        return False
+        # TODO: corregir el uso de 'dir'
+        constant = {'dir':value, 'type':type(value)}
+        constants[value] = constant
+        return constant
 
 def print_symtable():
     for proc in proc_table:
         print ('{'+proc+' : '+str(proc_table[proc])+'}')
 
-'''
-add_var('var1', 'float', 1.23)
-add_proc('one','int',[])
-add_var('var2', 'float', 4.56)
-print_symtable()
-'''
+

@@ -2,6 +2,6 @@
 
 
 clean:
-	rm -f *.pyc parser.out
+	rm -f *.pyc *.rlo parser.out
 	
 .PHONY: clean

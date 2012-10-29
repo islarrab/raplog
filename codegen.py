@@ -8,69 +8,50 @@ class Node:
     self.left = left
     self.right = right
 
-vp = []
-quads = []
-labelno = 0
+opdos = [] # pila de operandos
+opers = [] # pila de operadores
+jumps = [] # pila de saltos
+quads = [] # lista de cuadruplos
+tempno = 0
+curr_ins = -1
 
-def newlabel():
-  global labelno
-  labelno = labelno + 1
-  return 'L'+str(labelno)
+def newtemp():
+  # TODO: cuando definamos bien como manejar las direcciones virtuales
+  # hay que arreglar este metodo
+  global tempno
+  tempno += 1
+  return 't'+str(tempno)
 
-def gen_exp(node, vp):
-  if not node:
-    return
-  gen_exp(node.left, vp)
-  gen_exp(node.right, vp)
-  vp.append(node.leaf)
-  return vp
+def gen_quad(oper, opdo1, opdo2, res):
+  ''' genera un quadruplo y lo agrega a la lista de cuadruplos
+  @param oper el operador del cuadruplo
+  @param opdo1 el operando 1 del cuadruplo
+  @param opdo2 el operando 2 del cuadruplo
+  @param res direccion donde se guarda el resultado de la operacion'''
+  global curr_ins
+  quads.append([oper, opdo1, opdo2, res])
+  curr_ins += 1
+  print (quads[len(quads)-1])
 
-def gen_if(node):
-  l1 = newlabel()
-  vp = []
-  if isinstance(node.right, Node):
-    # if has else
-    l2 = newlabel()
-    vp = gen_exp(node.left, []) \
-       + [l1, 'gotof'] \
-       + gen_incode(node.right.left) \
-       + [l2, 'goto', l1+':'] \
-       + gen_incode(node.right.right) \
-       + [l2+':']
-  else:
-    # if has no else
-    vp = gen_exp(node.left, []) \
-       + [l1, 'gotof'] \
-       + gen_incode(node.right) \
-       + [l1+':']
-  return vp
+def unop(oper):
+  opdo1 = opdos.pop()
+  # TODO: usar cubo semantico para determinar bien el typo y checar errores
+  temp = {'dir':newtemp(), 'type': int}
+  gen_quad(oper, opdo1['dir'], '', temp['dir'])
+  opdos.append(temp)
 
-def gen_while(node):
-  l1 = newlabel()
-  l2 = newlabel()
-  vp = [l1+':'] \
-     + gen_exp(node.left, []) \
-     + [l2, 'gotof'] \
-     + gen_incode(node.right)
-  return vp
+def binop(oper):
+  opdo1 = opdos.pop()
+  opdo2 = opdos.pop()
+  # TODO: usar cubo semantico para determinar bien el typo y checar errores
+  temp = {'dir':newtemp(), 'type': int}
+  gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
+  opdos.append(temp)
 
-def gen_incode(ast):
-  vp = []
-  for statement in ast:
-    if isinstance(statement, list):
-      vp = vp + gen_incode(statement)
-    elif statement.type == 'if':
-      vp = vp + gen_if(statement)
-    elif statement.type == 'while':
-      vp = vp + gen_while(statement)
-    else:
-      vp = vp + gen_exp(statement, [])
-  return vp
-
-def write_to_file(code, file):
+def write_to_file(file):
   f = open(file, 'w')
-  for elem in code:
-    f.write(str(elem)+' ')
+  for quad in quads:
+    f.write(str(quad)+'\n')
   f.close()
 
 def print_ast(node, indent=''):
@@ -84,10 +65,4 @@ def print_ast(node, indent=''):
   print_ast(node.left, indent+'  ')
   print_ast(node.right, indent+'  ')
 
-def print_true_ast(node, indent=''):
-  if not node:
-    return
-  print(indent+str(node.leaf))
-  print_ast(node.left, indent+'  ')
-  print_ast(node.right, indent+'  ')
 
