@@ -31,7 +31,6 @@ def gen_quad(oper, opdo1, opdo2, res):
   global curr_ins
   quads.append([oper, opdo1, opdo2, res])
   curr_ins += 1
-  print (quads[len(quads)-1])
 
 def unop(oper):
   opdo1 = opdos.pop()
@@ -53,16 +52,4 @@ def write_to_file(file):
   for quad in quads:
     f.write(str(quad)+'\n')
   f.close()
-
-def print_ast(node, indent=''):
-  if not node:
-    return
-  if isinstance(node, list):
-    for item in node:
-      print_ast(item, indent)
-    return
-  print(indent+str(node.leaf))
-  print_ast(node.left, indent+'  ')
-  print_ast(node.right, indent+'  ')
-
 

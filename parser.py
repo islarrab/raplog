@@ -167,7 +167,6 @@ def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
     exp_res = codegen.opdos.pop()
     # TODO: arreglar uso de 'dir'
-    print exp_res
     var = symtable.add_var(p[1], exp_res['type'], exp_res['dir'])
     codegen.gen_quad('=', exp_res['dir'], '', var['dir'])
 
@@ -345,7 +344,6 @@ def p_array_index(p):
                    | LBRACK expression RBRACK array_index'''
     # TODO: cuando se implemente el cubo semantico hay que validar los indices
     #if not isinstance(p[2], (int, long)):
-    #    global errors
     #    errors.append('Wrong index type at line {}, indexes must be integers'.format(p.lineno(1)))
     # TODO: generacion de codigo
 
