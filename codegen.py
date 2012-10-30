@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # file codegen.py
 
+import semantic_cube
+
 class Node:
   def __init__(self,type,leaf=None,left=None,right=None):
     self.type = type
@@ -14,6 +16,15 @@ jumps = [] # pila de saltos, integers
 quads = [] # lista de cuadruplos
 tempno = 0
 curr_ins = -1
+
+def traduce_tipo(tipo):
+  return {
+    int: 0,
+    float: 1,
+    str: 2,
+    bool: 3,
+    None: 4,
+  }[tipo]
 
 def newtemp():
   # TODO: cuando definamos bien como manejar las direcciones virtuales
@@ -34,18 +45,24 @@ def gen_quad(oper, opdo1, opdo2, res):
 
 def unop(oper):
   opdo1 = opdos.pop()
-  # TODO: usar cubo semantico para determinar bien el typo y checar errores
-  temp = {'dir':newtemp(), 'type': int}
-  gen_quad(oper, opdo1['dir'], '', temp['dir'])
-  opdos.append(temp)
+  newt = semantic_cube.cube[oper][traduce_tipo(opdo1['type'])][traduce_tipo(None)]
+  if newt == 'E':
+    print "Error: No se puede hacer la operacion entre {} y {} del operando {} \n".format(opdo1['type'],opdo2['type'],oper)
+  else:
+    temp = {'dir':newtemp(), 'type': newt}
+    gen_quad(oper, opdo1['dir'], '', temp['dir'])
+    opdos.append(temp)
 
 def binop(oper):
   opdo2 = opdos.pop()
   opdo1 = opdos.pop()
-  # TODO: usar cubo semantico para determinar bien el tipo y checar errores
-  temp = {'dir':newtemp(), 'type': int}
-  gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
-  opdos.append(temp)
+  newt = semantic_cube.cube[oper][traduce_tipo(opdo1['type'])][traduce_tipo(opdo2['type'])]
+  if newt == 'E':
+    print "Error: No se puede hacer la operacion entre {} y {} del operando {} \n".format(opdo1['type'],opdo2['type'],oper)
+  else:
+    temp = {'dir':newtemp(), 'type': newt}
+    gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
+    opdos.append(temp)
 
 def write_to_file(file):
   f = open(file, 'w')
