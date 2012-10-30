@@ -42,7 +42,7 @@ def unop(oper):
 def binop(oper):
   opdo1 = opdos.pop()
   opdo2 = opdos.pop()
-  # TODO: usar cubo semantico para determinar bien el typo y checar errores
+  # TODO: usar cubo semantico para determinar bien el tipo y checar errores
   temp = {'dir':newtemp(), 'type': int}
   gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
   opdos.append(temp)

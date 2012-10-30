@@ -299,11 +299,10 @@ def p_expression_arithmetic(p):
 
 def p_expression_group(p):
     'expression : LPAREN expression RPAREN'
-    # TODO: checar bien si se necesita meter el fondo falso
 
 def p_expression_uplus(p):
     'expression : PLUS expression %prec UPLUS'
-    codegen.unop('uminus')
+    codegen.unop('uplus')
 
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
