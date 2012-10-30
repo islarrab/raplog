@@ -264,41 +264,47 @@ def p_callparams1(p):
                    | expression'''
     # TODO: generacion de codigo
 
-def p_expression_boolean(p):
+def p_expression_binop(p):
     '''expression : expression AND expression
-                  | expression OR expression'''
-    codegen.binop(p[2])
-
-def p_expression_boolean_not(p):
-    '''expression : NOT expression'''
-    codegen.unop(p[1])
-
-def p_expression_comparison(p):
-    '''expression : expression EQEQ expression
+                  | expression OR expression
+                  | expression EQEQ expression
                   | expression NE expression
                   | expression LT expression
                   | expression MT expression
                   | expression LTEQ expression
-                  | expression MTEQ expression'''
-    codegen.binop(p[2])
-
-def p_expression_arithmetic(p):
-    '''expression : expression PLUS expression
+                  | expression MTEQ expression
+                  | expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression'''
-    codegen.binop(p[2])
+    error = codegen.binop(p[2])
+    if error:
+        errors.append(error.format(lineno))
+        raise SyntaxError
+
+def p_expression_unop_not(p):
+    '''expression : NOT expression'''
+    error = codegen.unop(p[1])
+    if error:
+        errors.append(error.format(lineno))
+        raise SyntaxError
+
+def p_expression_unop_uplus(p):
+    'expression : PLUS expression %prec UPLUS'
+    errror = codegen.unop('uplus')
+    if error:
+        errors.append(error.format(lineno))
+        raise SyntaxError
+
+def p_expression_unop_uminus(p):
+    'expression : MINUS expression %prec UMINUS'
+    error = codegen.unop('uminus')
+    if error:
+        errors.append(error.format(lineno))
+        raise SyntaxError
 
 def p_expression_group(p):
     'expression : LPAREN expression RPAREN'
-
-def p_expression_uplus(p):
-    'expression : PLUS expression %prec UPLUS'
-    codegen.unop('uplus')
-
-def p_expression_uminus(p):
-    'expression : MINUS expression %prec UMINUS'
-    codegen.unop('uminus')
 
 def p_expression_element(p):
     'expression : varcte'
@@ -334,7 +340,7 @@ def p_array_index(p):
                    | LBRACK expression RBRACK array_index'''
     # TODO: cuando se implemente el cubo semantico hay que validar los indices
     #if not isinstance(p[2], (int, long)):
-    #    errors.append('Wrong index type at line {}, indexes must be integers'.format(p.lineno(1)))
+    #    errors.append('Line {}: indices must be integers, not {}'.format(p.lineno(1)))
     # TODO: generacion de codigo
 
 def p_array(p):
@@ -358,7 +364,7 @@ def p_empty(p):
     pass
 
 def p_error(t):
-	errors.append("Line {}: Syntax error near {}".format(t.value, t.lineno))
+	errors.append("Line {}: Syntax error near {}".format(t.lineno, t.value))
 
 # Build the parser
 yacc.yacc()
@@ -372,10 +378,10 @@ else:
     for quad in codegen.quads:
       print(quad)
     if len(errors) > 0:
-        print('found '+str(len(errors))+' errors:')
+        if len(errors) == 1: print('found '+str(len(errors))+' error:')
+        else:                print('found '+str(len(errors))+' errors:')
         for error in errors:
             print('    '+error)
     else:
         print('Program has no errors')
-        #codegen.print_ast(result)
         codegen.write_to_file(sys.argv[1].split('.')[0]+'.rlo')

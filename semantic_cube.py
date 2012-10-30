@@ -100,3 +100,14 @@ cube = {
 		]
 	}
 
+def traduce_tipo(tipo):
+  return {
+    int: 0,
+    float: 1,
+    str: 2,
+    bool: 3,
+    None: 4,
+  }[tipo]
+
+def get_type(oper, type1, type2):
+  return cube[oper][traduce_tipo(type1)][traduce_tipo(type2)]

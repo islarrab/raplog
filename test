@@ -3,6 +3,8 @@ prueba() {
 	b = 2
 	c = 3
 	d = 4
+	e = [1, 2, 3]
+	d = e[1]
 	put a*b+c*d
 	put a*(b+c)*d
 	put a*(b+c*d)

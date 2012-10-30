@@ -17,15 +17,6 @@ quads = [] # lista de cuadruplos
 tempno = 0
 curr_ins = -1
 
-def traduce_tipo(tipo):
-  return {
-    int: 0,
-    float: 1,
-    str: 2,
-    bool: 3,
-    None: 4,
-  }[tipo]
-
 def newtemp():
   # TODO: cuando definamos bien como manejar las direcciones virtuales
   # hay que arreglar este metodo
@@ -45,27 +36,27 @@ def gen_quad(oper, opdo1, opdo2, res):
 
 def unop(oper):
   opdo1 = opdos.pop()
-  newt = semantic_cube.cube[oper][traduce_tipo(opdo1['type'])][traduce_tipo(None)]
-  if newt == 'E':
-    print "Error: No se puede hacer la operacion entre {} y {} del operando {} \n".format(opdo1['type'],opdo2['type'],oper)
-  else:
-    temp = {'dir':newtemp(), 'type': newt}
-    gen_quad(oper, opdo1['dir'], '', temp['dir'])
-    opdos.append(temp)
+  newtype = semantic_cube.get_type(oper, opdo1['type'], None)
+  if newtype == 'E':
+    error = "Line {lineno}: Can't use {oper} on {op1}" 
+    return error.format(oper=oper, op1=opdo1['type'])
+  temp = {'dir':newtemp(), 'type': newtype}
+  gen_quad(oper, opdo1['dir'], '', temp['dir'])
+  opdos.append(temp)
 
 def binop(oper):
   opdo2 = opdos.pop()
   opdo1 = opdos.pop()
-  newt = semantic_cube.cube[oper][traduce_tipo(opdo1['type'])][traduce_tipo(opdo2['type'])]
-  if newt == 'E':
-    print "Error: No se puede hacer la operacion entre {} y {} del operando {} \n".format(opdo1['type'],opdo2['type'],oper)
-  else:
-    temp = {'dir':newtemp(), 'type': newt}
-    gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
-    opdos.append(temp)
+  newtype = semantic_cube.get_type(oper, opdo1['type'], opdo2['type'])
+  if newtype == 'E':
+    error = "Line {lineno}: Can't use '{oper}' between {op1} and {op2}" 
+    return error.format(lineno='{}', oper=oper, op1=opdo1['type'], op2=opdo2['type'])
+  temp = {'dir':newtemp(), 'type': newtype}
+  gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
+  opdos.append(temp)
 
-def write_to_file(file):
-  f = open(file, 'w')
+def write_to_file(filename):
+  f = open(filename, 'w')
   for quad in quads:
     f.write(str(quad)+'\n')
   f.close()

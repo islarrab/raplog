@@ -1,5 +1,9 @@
-*.py[co]
+# User defined
 *.out
+parsetab.py
+
+# Git defined
+*.py[co]
 *.swp
 
 # Packages
