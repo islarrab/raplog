@@ -378,4 +378,4 @@ else:
     else:
         print('Program has no errors')
         #codegen.print_ast(result)
-        codegen.write_to_file(vp, sys.argv[1].split('.')[0]+'.rlo')
+        codegen.write_to_file(sys.argv[1].split('.')[0]+'.rlo')
