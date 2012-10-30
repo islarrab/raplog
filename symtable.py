@@ -19,7 +19,7 @@ constants = { }
 # format = {function : (return_type, parameters, var_table)}
 # TODO: falta tamano y dir
 RETURN_TYPE = 0; PARAMETERS = 1; VAR_TABLE = 2
-proc_table = {'program' : (None, None, var_table)}
+proc_table = {'program' : [None, None, var_table]}
 current_proc = 'program'
 
 
@@ -49,7 +49,7 @@ def add_var(name, type, value):
     global var_table
     var = { 'dir': name, # TODO: asignar bien la direccion virtual
             'type': type,
-            'value': value}
+            'value': value }
     var_table[name] = var
     return var
 
@@ -66,7 +66,7 @@ def get_var(name):
         return proc_table['program'][VAR_TABLE][name]
     return None
 
-def get_constant(value):
+def add_constant(value):
     if value in constants:
         return constants[value]
     else:

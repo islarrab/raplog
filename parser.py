@@ -20,7 +20,9 @@ reserved = {
    'put' : 'PUT',
    'not' : 'NOT',
    'and' : 'AND',
-   'or' : 'OR'
+   'or' : 'OR',
+   'true' : 'TRUE',
+   'false' : 'FALSE'
 }
 
 tokens = list(reserved.values()) + [
@@ -49,9 +51,6 @@ t_RCURLY = r'\}'
 t_LBRACK = r'\['
 t_RBRACK = r'\]'
 t_COMA = r','
-#t_NOT = r'(not|NOT|!)'
-#t_AND = r'(and|AND|&&)'
-#t_OR = r'(or|OR|\|\|)'
 t_STRING = r'".*"'
 
 def t_INT(t):
@@ -74,12 +73,7 @@ def t_FLOAT(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    
     t.type = reserved.get(t.value,'ID') # Check for reserved words
-    if t.value == 'true':
-        t.value = True
-    elif t.value == 'false':
-        t.value = False
     return t
 
 # Ignored characters
@@ -94,7 +88,7 @@ def t_newline(t):
 	lineno += t.value.count("\n")
 
 def t_error(t):
-	errors.append("Illegal character '{}' at line {}".format(t.value[0], t.lineno))
+	errors.append("Line {}: Illegal character '{}'".format(t.lineno, t.value[0]))
 	t.lexer.skip(1)
 
 # Build the lexer 
@@ -178,16 +172,15 @@ def p_call(p):
     'call : ID LPAREN callparams RPAREN'
     proc = symtable.get_proc(p[1])
     if not proc:
-        errors.append("Call to an undefined function '{}' at line {}".format(p[1], p.lineno(1)))
+        errors.append("Line {}: Call to an undefined function '{}'".format(p.lineno(1), p[1]))
     p[0] = codegen.Node('call', p[1], None, None)
-    # TODO: checar existencia y manejar parametros
+    # TODO: manejar parametros
 
 def p_input(p):
     'input : GET ID'
     var = symtable.get_var(p[2])
     if not var:
-      # TODO: es posible que se necesite agregar el tipo de una vez
-      var = symtable.add_var(p[2], None, None)
+      var = symtable.add_var(p[2], str, None)
     codegen.gen_quad('scan', '', '', var['dir'])
 
 def p_output(p):
@@ -205,7 +198,7 @@ def p_i1(p):
     'i1 :'
     aux = codegen.opdos.pop()
     if (aux['type'] != bool):
-        errors.append('expression must be boolean, at line {}'.format(lineno))
+        errors.append('Line {}: expression must be boolean'.format(lineno))
     codegen.gen_quad('gotof', aux['dir'], '', '')
     codegen.jumps.append(codegen.curr_ins)
 
@@ -232,7 +225,7 @@ def p_w2(p):
     'w2 :'
     aux = codegen.opdos.pop()
     if (aux['type'] != bool):
-        errors.append('expresion must be boolean, at line {}'.format(lineno))
+        errors.append('Line {}: expresion must be boolean'.format(lineno))
     codegen.gen_quad('gotof', aux['dir'], '', '')
     codegen.jumps.append(codegen.curr_ins)
     
@@ -271,7 +264,6 @@ def p_callparams1(p):
                    | expression'''
     # TODO: generacion de codigo
 
-# TODO: hacer uso del cubo semantico en las expresiones
 def p_expression_boolean(p):
     '''expression : expression AND expression
                   | expression OR expression'''
@@ -316,24 +308,23 @@ def p_varcte_constant(p):
     '''varcte : INT 
               | FLOAT
               | STRING'''
-    p[0] = symtable.get_constant(p[1])
+    p[0] = symtable.add_constant(p[1])
 
 def p_varcte_id(p):
     '''varcte : ID'''
     var = symtable.get_var(p[1])
     if not var:
-        errors.append("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
+        errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[1]))
     else:
         p[0] = var
 
 def p_varcte_id_array(p):
     '''varcte : ID array_index'''
-    # TODO: uso apropiado de id en el nodo
     var = symtable.get_var(p[1])
     if not var:
-        errors.append("Undefined variable '{}' at line {}".format(p[1], p.lineno(1)))
+        errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[1]))
     elif var['type'] != list:
-        errors.append("Variable '{}' is not an array, at line {}".format(p[1], p.lineno(1)))
+        errors.append("Line {}: Variable '{}' is not an array".format(p.lineno(1), p[1]))
     # TODO: una vez que se arregle la definicion de arreglos hay que 
     # sacar el valor que este en p[2]
     p[0] = var
@@ -367,7 +358,7 @@ def p_empty(p):
     pass
 
 def p_error(t):
-	errors.append("Syntax error at line {}, near {}".format(t.lineno, t.value))
+	errors.append("Line {}: Syntax error near {}".format(t.value, t.lineno))
 
 # Build the parser
 yacc.yacc()

@@ -8,9 +8,9 @@ class Node:
     self.left = left
     self.right = right
 
-opdos = [] # pila de operandos
-opers = [] # pila de operadores
-jumps = [] # pila de saltos
+opdos = [] # pila de operandos, formato {'dir':dir, 'type':type}
+opers = [] # pila de operadores, strings
+jumps = [] # pila de saltos, integers
 quads = [] # lista de cuadruplos
 tempno = 0
 curr_ins = -1
@@ -40,8 +40,8 @@ def unop(oper):
   opdos.append(temp)
 
 def binop(oper):
-  opdo1 = opdos.pop()
   opdo2 = opdos.pop()
+  opdo1 = opdos.pop()
   # TODO: usar cubo semantico para determinar bien el tipo y checar errores
   temp = {'dir':newtemp(), 'type': int}
   gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
