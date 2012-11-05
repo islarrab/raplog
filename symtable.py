@@ -15,43 +15,48 @@ scopes = [ ]
 # formato: {valor : {'dir':dir, 'type':type}}
 constants = { }
 
-# tabla de procedimientos
-# format = {function : (return_type, parameters, var_table)}
-# TODO: falta tamano y dir
-RETURN_TYPE = 0; PARAMETERS = 1; VAR_TABLE = 2
-proc_table = {'program' : [None, None, var_table]}
+'''
+proc_table = {'proc1': {'start_no': #,
+						'params': []	,
+						'var_table': {}},
+			  'proc2': { ... }, ... }
+numero de parametros = len(proc_table['params']) 
+numero de variables = len(proc_table['var_table'])
+'''
+proc_table = {'program' : {'start_no':1, 'type':None, 'params':[], 'var_table':var_table}}
 current_proc = 'program'
 
 
 def pop_scope():
-    global var_table
     var_table = scopes.pop()
 
 def new_scope():
-    global scopes
     scopes.append(var_table)
 
-def add_proc(proc_name, return_type, parameters):
+def add_proc(proc_name, start_no, type):
     global current_proc
-    global var_table
-    global proc_table
     current_proc = proc_name
     var_table = {}
-    proc_table[current_proc] = [return_type, parameters, var_table]
+    proc_table[current_proc] = {'start_no':start_no,
+                                'type':type,
+                                'params':[],
+                                'var_table':var_table}
 
 def end_current_proc():
     global current_proc
-    global var_table
     current_proc = 'program'
-    var_table = proc_table['program'][2]
+    var_table = proc_table['program']['var_table']
 
 def add_var(name, type, value):
-    global var_table
     var = { 'dir': name, # TODO: asignar bien la direccion virtual
             'type': type,
             'value': value }
     var_table[name] = var
     return var
+
+def add_param(name, type):
+    # TODO: asignar bien 'dir'
+    proc_table[current_proc]['params'].append({'name':name, 'dir':name, 'type':type})
 
 def get_proc(proc):
     if proc in proc_table:
@@ -60,10 +65,15 @@ def get_proc(proc):
         return None
 
 def get_var(name):
-    if (name in proc_table[current_proc][VAR_TABLE]):
-        return proc_table[current_proc][VAR_TABLE][name]
-    if (name in proc_table['program'][VAR_TABLE]):
-        return proc_table['program'][VAR_TABLE][name]
+    if (name in proc_table[current_proc]['var_table']):
+        return proc_table[current_proc]['var_table'][name]
+    for param in proc_table[current_proc]['params']:
+        if name in param.values():
+            return param
+    if (name in proc_table[current_proc]['params']):
+        return proc_table[current_proc]['params'][name]
+    if (name in proc_table['program']['var_table']):
+        return proc_table['program']['var_table'][name]
     return None
 
 def add_constant(value):
@@ -77,6 +87,7 @@ def add_constant(value):
 
 def print_symtable():
     for proc in proc_table:
-        print ('{'+proc+' : '+str(proc_table[proc])+'}')
-
+       print(proc+': ')
+       for field in proc:
+           print('    '+str(field))
 

@@ -49,11 +49,14 @@ def binop(oper):
   opdo1 = opdos.pop()
   newtype = semantic_cube.get_type(oper, opdo1['type'], opdo2['type'])
   if newtype == 'E':
-    error = "Line {lineno}: Can't use '{oper}' between {op1} and {op2}" 
-    return error.format(lineno='{}', oper=oper, op1=opdo1['type'], op2=opdo2['type'])
+    error = "Line {lineno}: Can't use '{oper}' between {t1} and {t2}" 
+    return error.format(lineno='{}', oper=oper, t1=opdo1['type'], t2=opdo2['type'])
   temp = {'dir':newtemp(), 'type': newtype}
   gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
   opdos.append(temp)
+
+def peek_opdos():
+  return opdos[len(opdos)-1]
 
 def write_to_file(filename):
   f = open(filename, 'w')

@@ -1,31 +1,28 @@
-fibonacci(in n, out f) {
+int fibonacci(int n) {
     if n > 2
     {
     	f1 = 0
     	f2 = 0
-    	fibonacci(n - 1, f1)
-    	fibonacci(n - 2, f2)
-    	f = f1 + f2
+    	f1 = fibonacci(n - 1)
+    	f2 = fibonacci(n - 2)
+    	return f1 + f2
     } else {
-    	f = 1
+    	return 1
     }
 }
 
-factorial(in n, out f) {
-	if n <= 1
-	{
-		f = n
+int factorial(int n) {
+	if n <= 1 {
+		return n
 	} else {
-		f1 = 0
-		factorial(n - 1, f1)
-		f = f * f1
-		variable1 = 2
+		f1 = factorial(n - 1)
+		return f1 * n
 	}
 }
 
 a = 1
 
-start (){
+int main (){
 	_asd123ASD = 1
 	ABC_DEF = 2
 	_______ = 3 # segun sintaxis esto es un id aceptable

@@ -8,6 +8,7 @@ import codegen
 
 errors = []
 lineno = 0
+param_counter = 0
 
 # Reserved words
 reserved = {
@@ -22,7 +23,11 @@ reserved = {
    'and' : 'AND',
    'or' : 'OR',
    'true' : 'TRUE',
-   'false' : 'FALSE'
+   'false' : 'FALSE',
+   'return' : 'RETURN',
+   'int' : 'TYPEINT',
+   'float' : 'TYPEFLOAT',
+   'string' : 'TYPESTRING'
 }
 
 tokens = list(reserved.values()) + [
@@ -93,14 +98,7 @@ def t_error(t):
 
 # Build the lexer 
 lex.lex()
-'''
-lex.input(open(sys.argv[1], 'r').read())
-while 1:
-    tok = lex.token()
-    if not tok:
-        break
-    print (tok)
-'''
+
 # Parsing rules
 precedence = (
     ('left','OR'),
@@ -124,7 +122,7 @@ def p_new_scope(p):
 def p_add_proc(p):
     'add_proc :'
     # TODO: pasar el tipo que regresa y los parametros
-    symtable.add_proc(p[-1], None, None)
+    symtable.add_proc(p[-1], codegen.curr_ins+1, p[-2])
 # Semantic rules end
 
 def p_raplog(p):
@@ -135,9 +133,18 @@ def p_raplog_empty(p):
     'raplog : empty'
 
 def p_function(p):
-    'function : ID add_proc defparams statements-block'
+    'function : type ID add_proc defparams statements-block'
     symtable.end_current_proc()
-    # TODO: hacer algo con defparams
+    codegen.gen_quad('return', '', '', '')
+
+def p_defparams(p):
+    '''defparams : LPAREN defparams1 RPAREN
+                 | LPAREN RPAREN'''
+
+def p_defparams1(p):
+    '''defparams1 : type ID 
+                  | type ID COMA defparams1'''
+    symtable.add_param(p[2], p[1])
 
 def p_statements_block(p):
     'statements-block : LCURLY new_scope statements RCURLY'
@@ -155,26 +162,26 @@ def p_statement(p):
                  | input
                  | output
                  | selection
-                 | while'''
+                 | while
+                 | return'''
+
+def p_return(p):
+    '''return : RETURN expression'''
+    aux = codegen.opdos.pop()
+    codegen.gen_quad('return', aux['dir'], '', '')
 
 def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
     exp_res = codegen.opdos.pop()
-    # TODO: arreglar uso de 'dir'
-    var = symtable.add_var(p[1], exp_res['type'], exp_res['dir'])
+    print (p[1]+' = '+str(exp_res))
+    var = symtable.add_var(p[1], exp_res['type'], None)
     codegen.gen_quad('=', exp_res['dir'], '', var['dir'])
 
 def p_assignment_array(p):
     '''assignment : ID EQ array'''
+    # agregar tipo de arreglo para facilitar el manejo
+    #var = symtable.add_var(p[1], p[1][
     # TODO: como se manejan los arreglos en cuadruplos?
-
-def p_call(p):
-    'call : ID LPAREN callparams RPAREN'
-    proc = symtable.get_proc(p[1])
-    if not proc:
-        errors.append("Line {}: Call to an undefined function '{}'".format(p.lineno(1), p[1]))
-    p[0] = codegen.Node('call', p[1], None, None)
-    # TODO: manejar parametros
 
 def p_input(p):
     'input : GET ID'
@@ -236,33 +243,37 @@ def p_w3(p):
     codegen.gen_quad('goto', '', '', beginning_index)
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
-def p_defparams(p):
-    '''defparams : LPAREN defparams1 RPAREN
-                 | LPAREN RPAREN'''
-    # TODO: generacion de codigo
+def p_call(p):
+    'call : ID c1 LPAREN callparams RPAREN'
+    codegen.gen_quad('gosub', symtable.get_proc(p[1])['start_no'], '', '')
+    # reiniciar contador de parametros
+    global param_counter
+    param_counter = 0
+    # devuelve el id para usarse en expresiones
+    p[0] = p[1]
 
-def p_defparams1(p):
-    '''defparams1 : param_type ID 
-                  | param_type ID COMA defparams1'''
-    # TODO: determinar si si es aceptable el IN OUT ID, por ahora no es aceptado
-    # TODO: assignar el valor correcto de los parametros
-    symtable.add_var(p[2], int, 0)
-    # TODO: generacion de codigo
-
-def p_param_type(p):
-    '''param_type : IN
-                  | OUT'''
-    # TODO: generacion de codigo
+def p_c1(p):
+    'c1 :'
+    proc = symtable.get_proc(p[-1])
+    if not proc:
+        errors.append("Line {}: Call to an undefined function '{}'".format(p.lineno(1), p[1]))
+        raise SyntaxError
+    else:
+        # TODO: 'era' necesita el tamano total de la funcion, por ahora solo escribe el nombre
+        # duda: en la hoja de elda solo viene el nombre, correcto o en realidad va un numero?
+        codegen.gen_quad('era',p[-1], '', '')
 
 def p_callparams(p):
-    '''callparams : callparams1
+    '''callparams : callparams_aux
                   | empty'''
-    # TODO: generacion de codigo
 
-def p_callparams1(p):
-    '''callparams1 : expression COMA callparams1
-                   | expression'''
-    # TODO: generacion de codigo
+def p_callparams_aux(p):
+    '''callparams_aux : callparams_aux COMA expression
+                      | expression'''
+    global param_counter
+    param_counter += 1
+    aux = codegen.opdos.pop()
+    codegen.gen_quad('param', aux['dir'], '', 'param'+str(param_counter))
 
 def p_expression_binop(p):
     '''expression : expression AND expression
@@ -335,6 +346,11 @@ def p_varcte_id_array(p):
     # sacar el valor que este en p[2]
     p[0] = var
 
+def p_varcte_function(p):
+    '''varcte : call'''
+    # TODO: revisar: genera temp nueva y le da el tipo de que regresa la funcion
+    p[0] = {'dir':codegen.newtemp(), 'type':symtable.get_proc(p[1])['type']}
+
 def p_array_index(p):
     '''array_index : LBRACK expression RBRACK
                    | LBRACK expression RBRACK array_index'''
@@ -346,6 +362,7 @@ def p_array_index(p):
 def p_array(p):
     '''array : LBRACK array_elements RBRACK'''
     # TODO: parche temporal, hay que arreglar el uso de arreglos
+    
     codegen.opdos.append({'dir':'array', 'type': list})
 
 def p_array_empty(p):
@@ -358,6 +375,18 @@ def p_array_elements(p):
 
 def p_array_elements_2(p):
     '''array_elements : expression COMA array_elements'''
+
+def p_type_int(p):
+    'type : TYPEINT'
+    p[0] = int
+
+def p_type_float(p):
+    'type : TYPEFLOAT'
+    p[0] = float
+
+def p_type_string(p):
+    'type : TYPESTRING'
+    p[0] = str
 
 def p_empty(p):
     'empty :'
