@@ -1,14 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: cp1252 -*-
+
 import cuadruplos
 import memvir
 import regmem
 import proc
 import stack
 
-class MV(object):
-    
+class MV(object):    
 
     mv = memvir.MemoriaVirtual()  # same as doing it in another class
-    cuad = cuadruplos.Cuadtruplos()
+    cuad = cuadruplos.Cuadruplos()
     rm = regmem.RegistroMemoria()
     stack = stack.Stack()
     memoria = [mv]
@@ -35,7 +37,7 @@ class MV(object):
     # Descripción: Constructor que crea una maquina virtual con su directorio, su memoria virtual, su lista de cuadruplos, stack de ejecucion vacio
     #              Leé del código objeto
     # Entrada: string file_location
-    def MV(fileLocation)
+    def MV(fileLocation):
             directorio = [None] * 10000
             memoria = [mv for x in range(4)]
             cuadruplos = [(cuad)]
@@ -45,7 +47,7 @@ class MV(object):
 
      #Descripción: Método de instancia el cual nos indica si es posible o no ejecutar un cuadruplo en la Maquina virtual
     def permiteEjecutar():
-        if self.totalCuad > 0 && ieje != self.totalCuad:
+        if (self.getTotalCuad() > 0) and (ieje != self.getTotalCuad()):
             return true
         else:
             return false
@@ -65,44 +67,40 @@ class MV(object):
         boolval = false
         
         reg_pasado = stackeje.stack.Peek();
-        if !reg_pasado.rm.Ready:
+        if not (reg_pasado.rm.Ready()):
             reg_pasado = stackeje[1]
-        result = {
-            '1': 
-            '3': tm1 = (cuad.cuad.opdo1 / 100000) - 1
-                 tm2 = (cuad.cuad.opdo2 / 100000) - 1
-                 tipo1 = (cuad.cuad.opdo1 / 10000) % 10
-                 tipo2 = (cuad.cuad.opdo2 / 10000) % 10
+        a=cuad.cuad.getOper()
+        if(a==1 or a==3): #suma
+            tm1 = (cuad.cuad.opdo1 / 100000) - 1
+            tm2 = (cuad.cuad.opdo2 / 100000) - 1
+            tipo1 = (cuad.cuad.opdo1 / 10000) % 10
+            tipo2 = (cuad.cuad.opdo2 / 10000) % 10
 
-                 # Se obtiene el offset del pasado
-                 if tm1 == 1:
-                     offset1 = reg_pasado.rm.offsetLocal[tipo1-1];
-                 else if tm1 == 2:
-                     offset1 = reg_pasado.rm.offsetTemporal[tipo1-1];
-                 if tm2 == 1:
-                     offset2 = reg_pasado.rm.offsetLocal[tipo2-1];
-                 else if tm2 == 2:
-                     offset2 = reg_pasado.rm.offsetTemporal[tipo2-1];
+            # Se obtiene el offset del pasado
+            if tm1 == 1:
+                offset1 = reg_pasado.rm.offsetLocal[tipo1-1];
+            elif tm1 == 2:
+                offset1 = reg_pasado.rm.offsetTemporal[tipo1-1];
+            if tm2 == 1:
+                offset2 = reg_pasado.rm.offsetLocal[tipo2-1];
+            elif tm2 == 2:
+                offset2 = reg_pasado.rm.offsetTemporal[tipo2-1];
 
-                 if tipo1 == 1:
-                     if tipo2 == 1:
-                         valor = memoria[tm1].getMemoriaInt((cuad.cuad.getOpdo1 % 10000)+offset1) + memoria[tm2].getMemoriaInt((cuad.cuad.getOpdo2 % 10000)+offset2)
-                         guarda_en_memoria(!stackeje.stack.Peek().rm.Ready(), cuad.cuad.getRes(), valor)
-                     else if tipo2 == 2:
-                         valor = memoria[tm1].getMemoriaInt((cuad.cuad.getOpdo1 % 10000)+offset1) + memoria[tm2].getMemoriaFloat((cuad.cuad.getOpdo2 % 10000)+offset2)
-                         guarda_en_memoria(!stackeje.stack.Peek().rm.Ready, cuad.cuad.getRes(), valor)
-                 else if tipo1 == 2:
-                     if tipo2 == 1:
-                         valor = memoria[tm1].getMemoriaFloat((cuad.cuad.getOpdo1 % 10000)+offset1) + memoria[tm2].getMemoriaInt((cuad.cuad.getOpdo2 % 10000)+offset2)
-                         guarda_en_memoria(!stackeje.stack.Peek().rm.Ready, cuad.cuad.getRes(), valor)
-                     else if tipo2 == 2:
-                         valor = memoria[tm1].getMemoriaFloat((cuad.cuad.getOpdo1 % 10000) + offset1) + memoria[tm2].getMemoriaFloat((cuad.cuad.getOpdo2 % 10000)+offset2)
-                         guarda_en_memoria(!stackeje.stack.Peek().rm.Ready, cuad.cuad.getRes(), valor)
-                 ieje++,
-            '2':          
-        }[cuad.cuad.getOper]
-
-                    
+            if tipo1 == 1:
+                if tipo2 == 1:
+                    valor = memoria[tm1].getMemoriaInt((cuad.cuad.getOpdo1() % 10000)+offset1) + memoria[tm2].getMemoriaInt((cuad.cuad.getOpdo2() % 10000)+offset2)
+                    guarda_en_memoria(not stackeje.stack.Peek().rm.Ready(), cuad.cuad.getRes(), valor)
+                elif tipo2 == 2:
+                    valor = memoria[tm1].getMemoriaInt((cuad.cuad.getOpdo1() % 10000)+offset1) + memoria[tm2].getMemoriaFloat((cuad.cuad.getOpdo2() % 10000)+offset2)
+                    guarda_en_memoria(not stackeje.stack.Peek().rm.Ready(), cuad.cuad.getRes(), valor)
+            elif tipo1 == 2:
+                if tipo2 == 1:
+                    valor = memoria[tm1].getMemoriaFloat((cuad.cuad.getOpdo1() % 10000)+offset1) + memoria[tm2].getMemoriaInt((cuad.cuad.getOpdo2() % 10000)+offset2)
+                    guarda_en_memoria(not stackeje.stack.Peek().rm.Ready(), cuad.cuad.getRes(), valor)
+                elif tipo2 == 2:
+                    valor = memoria[tm1].getMemoriaFloat((cuad.cuad.getOpdo1() % 10000) + offset1) + memoria[tm2].getMemoriaFloat((cuad.cuad.getOpdo2() % 10000)+offset2)
+                    guarda_en_memoria(not stackeje.stack.Peek().rm.Ready(), cuad.cuad.getRes(), valor)
+            ieje= ieje + 1            
 
     #Descripción: Método de instancia el cual guarda el valor, en la dirección virtual, de la memoria en el contexto que depende del param
     #Entrada: param, direccion_virtual, valor
@@ -118,7 +116,7 @@ class MV(object):
             reg_pasado = stackeje[1]
         if tipomemoria == 1:
             offset = reg_pasado.rm.offsetLocal[tipovalor - 1]
-        else if tipomemoria == 2:
+        elif tipomemoria == 2:
             offset = reg_pasado.rm.offsetTemporal[tipovalor - 1]
         result = {
             '1': memoria[tipomemoria].mv.setMemoriaInt(direccion_virtual + offset, valor),

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: cp1252 -*-
 class RegistroMemoria(object):
 
     def __init__(self):
@@ -7,10 +9,10 @@ class RegistroMemoria(object):
         self.offsetsTemporales = [None] * 5
         self.direccionRetorno = 0
         self.direccionEjecucion = 0
-        self.ready = false
+        self.ready = False
         
-        # Descripción: Constructor del objeto Registro Memoria con los 4 arreglos de offses y tamaños, la direccion de retorno, direccion de ejecucion y el boolean ready
-        # Entrada: loc, temp, oloc, otem, dirret, direjec, read
+    # Descripción: Constructor del objeto Registro Memoria con los 4 arreglos de offses y tamaños, la direccion de retorno, direccion de ejecucion y el boolean ready
+    # Entrada: loc, temp, oloc, otem, dirret, direjec, read
 
     def RegistroMemoria(self, loc, temp, oloc, otem, dirret, direjec, read):
         self.tamanosLocales = loc

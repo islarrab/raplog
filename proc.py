@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: cp1252 -*-
+
 class Procedimiento(object):
         
          #Descripción: Constructor del objeto Procedimiento que nos indica el nombre de una funcion, tipo, direccion de inicio y cuantos slots de memoria de cada tipo son usados
