@@ -27,3 +27,4 @@
 ['or', 't10', 't13', 't14']
 ['gotof', 't14', '', 29]
 ['print', '"expresiones funcionan!"', '', '']
+['return', '', '', '']
