@@ -3,10 +3,10 @@
 class RegistroMemoria(object):
 
     def __init__(self):
-        self.tamanosLocales = [None] * 5
-        self.tamanosTemporales = [None] * 5
-        self.offsetsLocales = [None] * 5
-        self.offsetsTemporales = [None] * 5
+        self.tamanosLocales = []
+        self.tamanosTemporales = []
+        self.offsetsLocales = []
+        self.offsetsTemporales = []
         self.direccionRetorno = 0
         self.direccionEjecucion = 0
         self.ready = False
