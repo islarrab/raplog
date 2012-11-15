@@ -49,8 +49,10 @@ def cargarArchivo(fileName):
             c = linea.split(',');
             cuadruplo = cuad.Cuadruplos(c[0], c[1], c[2], c[3])
             cuadruplos.append(cuadruplo)
+            print linea
             #Siguiente linea
             linea = f.readline()
+            
 
 #Descripción: Método de instancia el cual nos indica si es posible o no ejecutar un cuadruplo en la Maquina virtual
 def permiteEjecutar():
@@ -109,7 +111,7 @@ def ejecutaCuadruplos():
          
         elif op == 8: #asignacion
             v1 = lee_memoria(cuad.getOpdo1())            
-            if type(v1) == mem_type(cuad.getRes())
+            if type(v1) == mem_type(cuad.getRes()):
                 guarda_en_memoria(cuad.getRes(), v1)
             else:
                 ad = "- " + str(type(v1)) + ' cannot be assigned to ' + str(mem_type(cuad.getRes()))
@@ -137,15 +139,15 @@ def lee_memoria(direccion):
     class_memory = mem_class(direccion)
     
     if class_memory == 0:
-        return mglobal.read(direccion)
+        return memglobal.read(direccion)
     if class_memory == 1:
-        return current_ar.mlocal.read(direccion)
+        return memlocal.read(direccion)
     if class_memory == 2:
-        return mconst.read(direccion)
+        return memconst.read(direccion)
     if class_memory == 3:
-        return current_ar.mtemp.read(direccion)
+        return memtemp.read(direccion)
     if class_memory == 4:
-        return mwild.read(direccion)
+        return memresto.read(direccion)
     else:
         print "Error en lectura:", direccion, class_memory
         exit(1)

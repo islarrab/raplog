@@ -1,0 +1,27 @@
+globint = 0
+globfloat = 10000
+globstr = 20000
+globbool = 30000
+localint = 40000
+locafloat = 50000
+localstr = 60000
+localbool = 70000
+constint = 80000
+constfloat = 90000
+conststr = 100000
+constbool = 110000
+tempint = 120000
+tempfloat = 130000
+tempstr = 140000
+tempbool = 150000
+resto = 200000
+
+suma = 0
+resta = 1
+multi= 2
+div = 3
+menorq = 4
+mayorq = 5
+igual = 6
+difer = 7
+asigna = 8
