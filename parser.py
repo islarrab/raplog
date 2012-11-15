@@ -15,8 +15,6 @@ reserved = {
    'if' : 'IF',
    'else' : 'ELSE',
    'while' : 'WHILE',
-   'in' : 'IN',
-   'out' : 'OUT',
    'get' : 'GET',
    'put' : 'PUT',
    'not' : 'NOT',
@@ -58,21 +56,22 @@ t_RBRACK = r'\]'
 t_COMA = r','
 t_STRING = r'".*"'
 
+def t_FLOAT(t):
+	r'[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?'
+	
+	try:
+		t.value = float(t.value)
+	except ValueError:
+		print("Invalid float value: %s", t.value)
+		t.value = 0
+	return t
+
 def t_INT(t):
 	r'[0-9]+'
 	try:
 		t.value = int(t.value)
 	except ValueError:
 		print("Integer value too large: %s", t.value)
-		t.value = 0
-	return t
-
-def t_FLOAT(t):
-	r'[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?'
-	try:
-		t.value = float(t.value)
-	except ValueError:
-		print("Invalid float value: %s", t.value)
 		t.value = 0
 	return t
 
@@ -412,5 +411,15 @@ else:
         for error in errors:
             print('    '+error)
     else:
+        symtable.print_symtable()
+        
+        # build the actual list to be written to the object file
+        # first section, the count of global variables and temporals
+        global_counts = symtable.proc_table['program']['counter'].values()
+        
+        
+        
+        
+        
         print('Program has no errors')
         codegen.write_to_file(sys.argv[1].split('.')[0]+'.rlo')

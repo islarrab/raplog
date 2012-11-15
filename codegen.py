@@ -2,6 +2,7 @@
 # file codegen.py
 
 import semantic_cube
+import symtable
 
 class Node:
   def __init__(self,type,leaf=None,left=None,right=None):
@@ -17,10 +18,17 @@ quads = [] # lista de cuadruplos
 tempno = 0
 curr_ins = -1
 
-def newtemp():
+def newtemp(type):
   # TODO: cuando definamos bien como manejar las direcciones virtuales
   # hay que arreglar este metodo
   global tempno
+  if type == int:
+    symtable.counter['itemp'] += 1
+  elif type == float:
+    symtable.counter['ftemp'] += 1
+  elif type == bool:
+    symtable.counter['btemp'] += 1
+  
   tempno += 1
   return 't'+str(tempno)
 
@@ -40,7 +48,7 @@ def unop(oper):
   if newtype == 'E':
     error = "Line {lineno}: Can't use {oper} on {op1}" 
     return error.format(oper=oper, op1=opdo1['type'])
-  temp = {'dir':newtemp(), 'type': newtype}
+  temp = {'dir':newtemp(newtype), 'type': newtype}
   gen_quad(oper, opdo1['dir'], '', temp['dir'])
   opdos.append(temp)
 
@@ -51,7 +59,7 @@ def binop(oper):
   if newtype == 'E':
     error = "Line {lineno}: Can't use '{oper}' between {t1} and {t2}" 
     return error.format(lineno='{}', oper=oper, t1=opdo1['type'], t2=opdo2['type'])
-  temp = {'dir':newtemp(), 'type': newtype}
+  temp = {'dir':newtemp(newtype), 'type': newtype}
   gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
   opdos.append(temp)
 
