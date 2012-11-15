@@ -9,6 +9,8 @@ import regmem
 import proc
 import stack
 
+
+
 cuad = cuadruplos.Cuadruplos()
 rm = regmem.RegistroMemoria()
 pr = proc.Procedimiento()
@@ -16,7 +18,7 @@ stack = stack.Stack()
 memglobal = Memory(0)
 memlocal = Memory(40000)
 memconst = Memory(80000)
-memtemo = Memory(120000)
+memtemp = Memory(120000)
 memresto = Memory(200000)
 cuadruplos = [(cuad)]
 ieje = 0
@@ -46,10 +48,9 @@ def cargarArchivo(fileName):
         #Lectura de cuadruplos
         while True:
             if not linea: break
-            c = linea.split(',');
+            c = linea.split();
             cuadruplo = cuad.Cuadruplos(c[0], c[1], c[2], c[3])
             cuadruplos.append(cuadruplo)
-            print linea
             #Siguiente linea
             linea = f.readline()
             
@@ -73,6 +74,7 @@ def ejecutaCuadruplos():
             v1 = lee_memoria(cuad.getOpdo1())
             v2 = lee_memoria(cuad.getOpdo2())
             guarda_en_memoria(cuad.getRes(), v1+v2)
+            print lee_memoria(cuad.getRes())
 
         elif op == 1: #resta
             v1 = lee_memoria(cuad.getOpdo1())

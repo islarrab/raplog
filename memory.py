@@ -7,21 +7,21 @@ class Memory:
         self.memstr = 20000
         self.membool = 30000
 
-    # Set and return if offset is 200000
+    # 
     def set(self, direccion, value):        
         if self.offset == 200000:
-            if type(value) == type(0):
+            if type(value) == int:
                 rdireccion = self.memint
                 self.memint = self.memint + 1
-            elif type(value) == type(0.0):
+            elif type(value) == float:
                 rdireccion = self.memfloat
-                self.memflo = self.memflo + 1
-            elif type(value) == type(''):
+                self.memflo = self.memflot + 1
+            elif type(value) == str:
                 rdireccion = self.memstr
                 self.memstr = self.memstr + 1
             elif type(value) == bool:
                 rdireccion = self.membool
-                self.memlis = self.memlis + 1
+                self.membool = self.membool + 1
                 
             self.revisaVacio()
                     

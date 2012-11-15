@@ -14,6 +14,7 @@ tempint = 120000
 tempfloat = 130000
 tempstr = 140000
 tempbool = 150000
+pointer = 160000
 resto = 200000
 
 suma = 0
