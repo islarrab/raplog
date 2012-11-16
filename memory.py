@@ -15,7 +15,7 @@ class Memory:
                 self.memint = self.memint + 1
             elif type(value) == float:
                 rdireccion = self.memfloat
-                self.memflo = self.memflot + 1
+                self.memfloat = self.memflot + 1
             elif type(value) == str:
                 rdireccion = self.memstr
                 self.memstr = self.memstr + 1
@@ -27,9 +27,12 @@ class Memory:
                     
         else:
             rdireccion = direccion - self.offset
-                    
+            
         self.mem[rdireccion] = value
         return rdireccion + self.offset
+
+    def get(self):
+        return self.mem
 
     # Regresa el valor en alguna direccion o imrpime error.
     def read(self, direccion):        
@@ -57,7 +60,7 @@ class Memory:
             exit(1)
 
     #Regresa de que clase es una direccion
-    def mem_class(direccion):
+    def mem_class(self, direccion):
         if direccion >= 200000:             # Resto
             return 4
         if direccion >= 120000:             # Temporal
@@ -81,7 +84,7 @@ class Memory:
             return 3
 
     #Regresa el tipo de una direccion
-    def mem_type(direccion):        
+    def mem_type(self,direccion):        
         if direccion >= 200000:                # Resto
             direccion = direccion - 200000
         elif direccion >= 120000:              # Temporal

@@ -1,10 +1,10 @@
-class Cuadruplos(object):
+class Cuadruplos:
 
     def __init__(self):
-        self.oper = None
-        self.opdo1 = None
-        self.opdo2 = None
-        self.res = None
+        self.oper = 0
+        self.opdo1 = 0
+        self.opdo2 = 0
+        self.res = 0
         
     def Cuadruplos(self, oper, opdo1, opdo2, res):
             self.oper = oper

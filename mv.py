@@ -4,14 +4,12 @@
 import sys
 import os
 from memory import *
-import cuadruplos
+#import cuadruplos
 import regmem
 import proc
 import stack
 
-
-
-cuad = cuadruplos.Cuadruplos()
+#cuad = cuadruplos.Cuadruplos()
 rm = regmem.RegistroMemoria()
 pr = proc.Procedimiento()
 stack = stack.Stack()
@@ -20,7 +18,7 @@ memlocal = Memory(40000)
 memconst = Memory(80000)
 memtemp = Memory(120000)
 memresto = Memory(200000)
-cuadruplos = [(cuad)]
+cuadruplos = []
 ieje = 0
 stackeje = [stack]
 param = []
@@ -36,21 +34,29 @@ def getCuadruplo():
 
 def cargarArchivo(fileName):
         directorio = []
-        cuadruplos = [(cuad)]
         stackeje = [stack]
         ieje = 0
         auxlinea = ""
 
         #Lectura del Archivo del codigo Objeto
-        f = open(fileName, "r")
+        f = open(fileName, "r")        
         #Primera linea
-        linea = f.readline()          
+        linea = f.readline()        
+        #Lectura de memoria
+        while(linea != '---\n'):
+            #Lectura de constantes
+            c = linea.split()
+            #checando tipo de la constante
+            t = memglobal.mem_type(int(c[0]))
+            guarda_en_memoria(int(c[0]),t(c[1]))
+            linea = f.readline()
         #Lectura de cuadruplos
+        linea = f.readline()
         while True:
             if not linea: break
-            c = linea.split();
-            cuadruplo = cuad.Cuadruplos(c[0], c[1], c[2], c[3])
-            cuadruplos.append(cuadruplo)
+            c = [int(n) for n in linea.split()]
+            #cuadruplo = cuad.Cuadruplos(c[0], c[1], c[2], c[3])
+            cuadruplos.append(c)
             #Siguiente linea
             linea = f.readline()
             
@@ -67,61 +73,61 @@ def permiteEjecutar():
 def ejecutaCuadruplos():
     global ieje
     while ieje < getTotalCuad():
-        ieje += 1
-        op = cuad.getOper()
+        cuad = cuadruplos[ieje]
+        op= cuad[0]
         
         if op == 0: # suma
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1+v2)
-            print lee_memoria(cuad.getRes())
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1+v2)
 
         elif op == 1: #resta
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1-v2)
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1-v2)
             
         elif op == 2: #multiplicacion
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1*v2)
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1*v2)
             
         elif op == 3: #division
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1/v2)
-                
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1/v2)
+            
         elif op == 4: #menor que
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1<v2)
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1<v2)
 
         elif op == 5: #mayor que
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1>v2)
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1>v2)
                     
         elif op == 6: #igual
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1==v2)
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1==v2)
         
         elif op == 7: #diferente a
-            v1 = lee_memoria(cuad.getOpdo1())
-            v2 = lee_memoria(cuad.getOpdo2())
-            guarda_en_memoria(cuad.getRes(), v1!=v2)
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1!=v2)
          
         elif op == 8: #asignacion
-            v1 = lee_memoria(cuad.getOpdo1())            
-            if type(v1) == mem_type(cuad.getRes()):
-                guarda_en_memoria(cuad.getRes(), v1)
+            v1 = lee_memoria(cuad[1])            
+            if type(v1) == mem_type(cuad[3]):
+                guarda_en_memoria(cuad[3], v1)
             else:
-                ad = "- " + str(type(v1)) + ' cannot be assigned to ' + str(mem_type(cuad.getRes()))
-                s_error(0, ad)
-                
+                ad = "- " + str(type(v1)) + ' cannot be assigned to ' + str(mem_type(cuad[3]))
+                s_error(0, ad)      
+        ieje += 1
+        
 # Guarda la direccion
 def guarda_en_memoria(direccion, value):    
-    class_memory = mem_class(direccion)        
+    class_memory = memglobal.mem_class(direccion)
     if class_memory == 0:
         memglobal.set(direccion, value)
     elif class_memory == 1:
@@ -138,7 +144,7 @@ def guarda_en_memoria(direccion, value):
 
 #Regresa el valor de la direccion
 def lee_memoria(direccion):    
-    class_memory = mem_class(direccion)
+    class_memory = memglobal.mem_class(direccion)
     
     if class_memory == 0:
         return memglobal.read(direccion)
@@ -162,6 +168,8 @@ def main():
     cargarArchivo('cod.obj')
     if permiteEjecutar():
         ejecutaCuadruplos()
+    print memconst.get()
+    print memglobal.get()
 
 
 
