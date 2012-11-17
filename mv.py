@@ -48,7 +48,7 @@ def cargarArchivo(fileName):
             c = linea.split()
             #checando tipo de la constante
             t = memglobal.mem_type(int(c[0]))
-            guarda_en_memoria(int(c[0]),t(cuad[1]))
+            guarda_en_memoria(int(c[0]),t(c[1]))
             linea = f.readline()
         #Lectura de cuadruplos
         linea = f.readline()
