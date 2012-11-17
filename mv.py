@@ -48,14 +48,14 @@ def cargarArchivo(fileName):
             c = linea.split()
             #checando tipo de la constante
             t = memglobal.mem_type(int(c[0]))
-            guarda_en_memoria(int(c[0]),t(c[1]))
+            guarda_en_memoria(int(c[0]),t(cuad[1]))
             linea = f.readline()
         #Lectura de cuadruplos
         linea = f.readline()
         while True:
             if not linea: break
             c = [int(n) for n in linea.split()]
-            #cuadruplo = cuad.Cuadruplos(c[0], c[1], c[2], c[3])
+            #cuadruplo = cuad.Cuadruplos(c[0], cuad[1], cuad[2], cuad[3])
             cuadruplos.append(c)
             #Siguiente linea
             linea = f.readline()
@@ -122,7 +122,59 @@ def ejecutaCuadruplos():
                 guarda_en_memoria(cuad[3], v1)
             else:
                 ad = "- " + str(type(v1)) + ' cannot be assigned to ' + str(mem_type(cuad[3]))
-                s_error(0, ad)      
+                s_error(0, ad)
+
+        elif op == 9: #and
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            if v1 and v2:
+                guarda_en_memoria(cuad[3], True)
+            else:
+                guarda_en_memoria(cuad[3], False)
+
+        elif op == 10: #or
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            if v1 or v2:
+                guarda_en_memoria(cuad[3], True)
+            else:
+                guarda_en_memoria(cuad[3], False)
+
+        elif op == 11: #not
+            v1 = lee_memoria(cuad[1])
+            if v1:
+                guarda_en_memoria(cuad[3], False)
+            else:
+                guarda_en_memoria(cuad[3], True)
+            
+        elif op == 12: # print
+            v1 = lee_memoria(cuad[3])
+            if type(v1) == type([]):
+                print lee_arreglo(v1),
+            else:
+                print v1
+        
+        elif op == 13: # gotof
+            v1 = lee_memoria(cuad[1])
+            if type(v1) == type(True) or type(v1) == type(0):
+                if v1 == False or v1 == 0:
+                    ieje = int(cuad[3])
+            else:
+                ad = "- " + str(type(v1)) + " No es valido."
+                s_error(2, ad)
+        
+        elif op == 14: # gotov
+            v1 = lee_memoria(cuad[1])
+            if type(v1) == type(True) or type(v1) == type(0):
+                if v1 == True or v1 != 0:
+                    ieje = int(cuad[3])
+            else:
+                ad = "- " + str(type(v1)) + " No es valido."
+                s_error(2, ad)
+        
+        elif op == 15: # goto
+            ieje = int(cuad[3])        
+            
         ieje += 1
         
 # Guarda la direccion
