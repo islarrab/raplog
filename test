@@ -6,4 +6,6 @@ int prueba() {
 	put a*b+c*d
 	put a*(b+c)*d
 	put a*(b+c*d)
+	if (true and false) {
+	}
 }

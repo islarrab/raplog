@@ -3,7 +3,7 @@ globfloat = 10000
 globstr = 20000
 globbool = 30000
 localint = 40000
-locafloat = 50000
+localfloat = 50000
 localstr = 60000
 localbool = 70000
 constint = 80000
@@ -33,3 +33,26 @@ printt = 12
 gotof = 13
 gotov = 14
 goto = 15
+menorigualq = 16
+mayorigualq = 17
+
+of = {
+'+':suma,
+'-':resta,
+'*':multi,
+'/':div,
+'=':asigna,
+'==':igual,
+'<>':difer,
+'<':menorq,
+'>':mayorq,
+'<=':menorigualq,
+'>=':mayorigualq,
+'and':andd,
+'or':orr,
+'not':nott,
+'print':printt,
+'gotof':gotof,
+'gotov':gotov,
+'goto':goto,
+}

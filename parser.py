@@ -5,6 +5,7 @@ import lex
 import yacc
 import symtable
 import codegen
+import dir
 
 errors = []
 lineno = 0
@@ -17,9 +18,9 @@ reserved = {
    'while' : 'WHILE',
    'get' : 'GET',
    'put' : 'PUT',
-   'not' : 'NOT',
    'and' : 'AND',
    'or' : 'OR',
+   'not' : 'NOT',
    'true' : 'TRUE',
    'false' : 'FALSE',
    'return' : 'RETURN',
@@ -55,6 +56,7 @@ t_LBRACK = r'\['
 t_RBRACK = r'\]'
 t_COMA = r','
 t_STRING = r'".*"'
+
 
 def t_FLOAT(t):
 	r'[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?'
@@ -173,8 +175,8 @@ def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
     exp_res = codegen.opdos.pop()
     print (p[1]+' = '+str(exp_res))
-    var = symtable.add_var(p[1], exp_res['type'], None)
-    codegen.gen_quad('=', exp_res['dir'], '', var['dir'])
+    var = symtable.add_var(p[1], exp_res['type'])
+    codegen.gen_quad(p[2], exp_res['dir'], '', var['dir'])
 
 def p_assignment_array(p):
     '''assignment : ID EQ array'''
@@ -186,7 +188,7 @@ def p_input(p):
     'input : GET ID'
     var = symtable.get_var(p[2])
     if not var:
-      var = symtable.add_var(p[2], str, None)
+      var = symtable.add_var(p[2], str)
     codegen.gen_quad('scan', '', '', var['dir'])
 
 def p_output(p):
@@ -203,9 +205,9 @@ def p_selection_else(p):
 def p_i1(p):
     'i1 :'
     aux = codegen.opdos.pop()
-    if (aux['type'] != bool):
+    if (aux['type'] != bool and aux['type'] != int):
         errors.append('Line {}: expression must be boolean'.format(lineno))
-    codegen.gen_quad('gotof', aux['dir'], '', '')
+    codegen.gen_quad(dir.of['gotof'], aux['dir'], '', '')
     codegen.jumps.append(codegen.curr_ins)
 
 def p_i2(p):
@@ -232,14 +234,14 @@ def p_w2(p):
     aux = codegen.opdos.pop()
     if (aux['type'] != bool):
         errors.append('Line {}: expresion must be boolean'.format(lineno))
-    codegen.gen_quad('gotof', aux['dir'], '', '')
+    codegen.gen_quad(dir.of['gotof'], aux['dir'], '', '')
     codegen.jumps.append(codegen.curr_ins)
     
 def p_w3(p):
     'w3 :'
     gotof_index = codegen.jumps.pop()
     beginning_index = codegen.jumps.pop()
-    codegen.gen_quad('goto', '', '', beginning_index)
+    codegen.gen_quad(dir.of['goto'], '', '', beginning_index)
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
 def p_call(p):
@@ -287,6 +289,7 @@ def p_expression_binop(p):
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression'''
+    print codegen.opdos
     error = codegen.binop(p[2])
     if error:
         errors.append(error.format(lineno))
@@ -325,6 +328,15 @@ def p_varcte_constant(p):
               | FLOAT
               | STRING'''
     p[0] = symtable.add_constant(p[1])
+
+def p_varcte_constant_true(p):
+    '''varcte : TRUE'''
+    print "found true"
+    p[0] = symtable.add_constant(1)
+
+def p_varcte_constant_false(p):
+    '''varcte : FALSE'''
+    p[0] = symtable.add_constant(0)
 
 def p_varcte_id(p):
     '''varcte : ID'''
@@ -403,8 +415,6 @@ if (len(sys.argv) <= 1):
 else:
     f = open(sys.argv[1], 'r')
     yacc.parse(f.read())
-    for quad in codegen.quads:
-      print(quad)
     if len(errors) > 0:
         if len(errors) == 1: print('found '+str(len(errors))+' error:')
         else:                print('found '+str(len(errors))+' errors:')
@@ -415,10 +425,11 @@ else:
         
         # build the actual list to be written to the object file
         # first section, the count of global variables and temporals
-        global_counts = symtable.proc_table['program']['counter'].values()
+        global_counts = symtable.proc_table['program']['var_counter'].values()
         
         
-        
+        for quad in codegen.quads:
+          print(quad)
         
         
         print('Program has no errors')

@@ -1,4 +1,6 @@
 # Cubo Semantico
+import dir
+
 cube = {
 		'+':[#SUMA(+)
 			[int,float,'E','E','E'],
@@ -64,22 +66,22 @@ cube = {
 			['E','E','E','E','E']
 		],
 		'and':[#AND
-			['E','E','E','E','E'],
-			['E','E','E','E','E'],
+			[int,int,'E','E','E'],
+			[int,int,'E','E','E'],
 			['E','E','E','E','E'],
 			['E','E','E',bool,'E'],
 			['E','E','E','E','E']
 		],
 		'or':[#OR
-			['E','E','E','E','E'],
-			['E','E','E','E','E'],
+			[int,int,'E','E','E'],
+			[int,int,'E','E','E'],
 			['E','E','E','E','E'],
 			['E','E','E',bool,'E'],
 			['E','E','E','E','E']
 		],
 		'not':[#NOT
-			['E','E','E','E','E'],
-			['E','E','E','E','E'],
+			['E','E','E','E',int],
+			['E','E','E','E',int],
 			['E','E','E','E','E'],
 			['E','E','E','E',bool],
 			['E','E','E','E','E']

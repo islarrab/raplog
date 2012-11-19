@@ -3,6 +3,7 @@
 
 import semantic_cube
 import symtable
+import dir
 
 class Node:
   def __init__(self,type,leaf=None,left=None,right=None):
@@ -15,22 +16,7 @@ opdos = [] # pila de operandos, formato {'dir':dir, 'type':type}
 opers = [] # pila de operadores, strings
 jumps = [] # pila de saltos, integers
 quads = [] # lista de cuadruplos
-tempno = 0
 curr_ins = -1
-
-def newtemp(type):
-  # TODO: cuando definamos bien como manejar las direcciones virtuales
-  # hay que arreglar este metodo
-  global tempno
-  if type == int:
-    symtable.counter['itemp'] += 1
-  elif type == float:
-    symtable.counter['ftemp'] += 1
-  elif type == bool:
-    symtable.counter['btemp'] += 1
-  
-  tempno += 1
-  return 't'+str(tempno)
 
 def gen_quad(oper, opdo1, opdo2, res):
   ''' genera un quadruplo y lo agrega a la lista de cuadruplos
@@ -48,8 +34,8 @@ def unop(oper):
   if newtype == 'E':
     error = "Line {lineno}: Can't use {oper} on {op1}" 
     return error.format(oper=oper, op1=opdo1['type'])
-  temp = {'dir':newtemp(newtype), 'type': newtype}
-  gen_quad(oper, opdo1['dir'], '', temp['dir'])
+  temp = {'dir':symtable.newtemp(newtype), 'type': newtype}
+  gen_quad(dir.of[oper], opdo1['dir'], '', temp['dir'])
   opdos.append(temp)
 
 def binop(oper):
@@ -59,8 +45,8 @@ def binop(oper):
   if newtype == 'E':
     error = "Line {lineno}: Can't use '{oper}' between {t1} and {t2}" 
     return error.format(lineno='{}', oper=oper, t1=opdo1['type'], t2=opdo2['type'])
-  temp = {'dir':newtemp(newtype), 'type': newtype}
-  gen_quad(oper, opdo1['dir'], opdo2['dir'], temp['dir'])
+  temp = {'dir':symtable.newtemp(newtype), 'type': newtype}
+  gen_quad(dir.of[oper], opdo1['dir'], opdo2['dir'], temp['dir'])
   opdos.append(temp)
 
 def peek_opdos():
@@ -68,7 +54,30 @@ def peek_opdos():
 
 def write_to_file(filename):
   f = open(filename, 'w')
+  
+  # seccion de globales
+  globs = symtable.proc_table['program']['var_counter']
+  f.write(str(globs[int])+' '+str(globs[float])+' '+str(globs[str])+' '+str(globs[bool])+' ')
+  # seccion de temporales, saca el maximo de temporales de todos los procedimientos
+  t = {int:0, float:0, str:0, bool:0}
+  for proc in symtable.proc_table:
+    t[int] =   max(t[int],   symtable.proc_table[proc]['temp_counter'][int])
+    t[float] = max(t[float], symtable.proc_table[proc]['temp_counter'][float])
+    t[str] =   max(t[str],   symtable.proc_table[proc]['temp_counter'][str])
+    t[bool] =  max(t[bool],  symtable.proc_table[proc]['temp_counter'][bool])
+  f.write(str(t[int])+' '+str(t[float])+' '+str(t[str])+' '+str(t[bool])+'\n')
+  
+  # seccion de constantes
+  for constant in symtable.constants.keys():
+    f.write(str(symtable.constants[constant]['dir'])+' '+str(constant)+'\n')
+  
+  # divisor
+  f.write('---\n')
+  
+  # seccion de cuadruplos
   for quad in quads:
-    f.write(str(quad)+'\n')
+    for elem in quad:
+      f.write(str(elem)+' ')
+    f.write('\n')
   f.close()
 
