@@ -375,8 +375,7 @@ def p_varcte_id(p):
 
 def p_varcte_id_array(p):
     '''varcte : ID array_index'''
-    var = symtable.get_var(p[1])
-    p[0] = var
+    p[0] = p[2]
 
 def p_varcte_call(p):
     '''varcte : call'''
