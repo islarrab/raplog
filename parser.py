@@ -123,6 +123,8 @@ def p_new_scope(p):
 def p_add_proc(p):
     'add_proc :'
     symtable.add_proc(p[-1], codegen.curr_ins+1, p[-2])
+    codegen.gen_quad(dir.goto, -1, -1, -1)
+    codegen.jumps.append(codegen.curr_ins)
 # Semantic rules end
 
 def p_raplog(p):
@@ -134,6 +136,7 @@ def p_function(p):
     'function : type ID add_proc defparams statements-block'
     symtable.end_current_proc()
     codegen.gen_quad(dir.ret, -1, -1, -1)
+    codegen.quads[codegen.jumps.pop()][3] = codegen.curr_ins+1
 
 def p_defparams_parens(p):
     '''defparams : LPAREN defparams1 RPAREN
