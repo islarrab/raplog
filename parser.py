@@ -133,7 +133,7 @@ def p_raplog(p):
 def p_function(p):
     'function : type ID add_proc defparams statements-block'
     symtable.end_current_proc()
-    codegen.gen_quad('ret', '', '', '')
+    codegen.gen_quad('ret', -1, -1, -1)
 
 def p_defparams_parens(p):
     '''defparams : LPAREN defparams1 RPAREN
@@ -166,25 +166,25 @@ def p_statement(p):
 def p_return(p):
     '''return : RETURN expression'''
     aux = codegen.opdos.pop()
-    codegen.gen_quad('return', aux['dir'], '', '')
+    codegen.gen_quad('return', aux['dir'], -1, -1)
 
 def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
     exp_res = codegen.opdos.pop()
     var = symtable.add_var(p[1], exp_res['type'], None)
-    codegen.gen_quad(dir.asigna, exp_res['dir'], '', var['dir'])
+    codegen.gen_quad(dir.asigna, exp_res['dir'], -1, var['dir'])
 
 def p_assignment_index_expression(p):
     '''assignment : ID array_index EQ expression'''
     exp_res = codegen.opdos.pop()
     var = symtable.add_var(p[1], exp_res['type'], None)
-    codegen.gen_quad(dir.asigna, exp_res['dir'], '', var['dir'])
+    codegen.gen_quad(dir.asigna, exp_res['dir'], -1, var['dir'])
 
 def p_assignment_array(p):
     '''assignment : type ID EQ array'''
     var = symtable.add_var(p[2], p[1], len(p[4]))
     for i in range(len(p[4])):
-        codegen.gen_quad(dir.asigna, p[4][i]['dir'], '', var['dir']+i)
+        codegen.gen_quad(dir.asigna, p[4][i]['dir'], -1, var['dir']+i)
 
 def p_assignment_array_2(p):
     '''assignment : type ID LBRACK INT RBRACK'''
@@ -195,12 +195,12 @@ def p_input(p):
     var = symtable.get_var(p[2])
     if not var:
       var = symtable.add_var(p[2], str, None)
-    codegen.gen_quad('scan', '', '', var['dir'])
+    codegen.gen_quad('scan', -1, -1, var['dir'])
 
 def p_output(p):
     'output : PUT expression'
     aux = codegen.opdos.pop()
-    codegen.gen_quad('print', aux['dir'], '', '')
+    codegen.gen_quad('print', aux['dir'], -1, -1)
 
 def p_selection(p):
     'selection : IF expression i1 statements-block i3'
@@ -213,12 +213,12 @@ def p_i1(p):
     aux = codegen.opdos.pop()
     if (aux['type'] != bool and aux['type'] != int):
         errors.append('Line {}: expression must be boolean'.format(lineno))
-    codegen.gen_quad(dir.gotof, aux['dir'], '', '')
+    codegen.gen_quad(dir.gotof, aux['dir'], -1, -1)
     codegen.jumps.append(codegen.curr_ins)
 
 def p_i2(p):
     'i2 :'
-    codegen.gen_quad(dir.goto, '', '', '')
+    codegen.gen_quad(dir.goto, -1, -1, -1)
     i = codegen.jumps.pop()
     codegen.quads[i][3] = codegen.curr_ins+1
     codegen.jumps.append(codegen.curr_ins)
@@ -240,19 +240,19 @@ def p_w2(p):
     aux = codegen.opdos.pop()
     if (aux['type'] != bool):
         errors.append('Line {}: expresion must be boolean'.format(lineno))
-    codegen.gen_quad(dir.gotof, aux['dir'], '', '')
+    codegen.gen_quad(dir.gotof, aux['dir'], -1, -1)
     codegen.jumps.append(codegen.curr_ins)
     
 def p_w3(p):
     'w3 :'
     gotof_index = codegen.jumps.pop()
     beginning_index = codegen.jumps.pop()
-    codegen.gen_quad(dir.goto, '', '', beginning_index)
+    codegen.gen_quad(dir.goto, -1, -1, beginning_index)
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
 def p_call(p):
     'call : ID c1 LPAREN callparams RPAREN'
-    codegen.gen_quad('gosub', symtable.get_proc(p[1])['start_no'], '', '')
+    codegen.gen_quad('gosub', symtable.get_proc(p[1])['start_no'], -1, -1)
     # reiniciar contador de parametros
     global param_counter
     param_counter = 0
@@ -268,7 +268,7 @@ def p_c1(p):
     else:
         # TODO: 'era' necesita el tamano total de la funcion, por ahora solo escribe el nombre
         # duda: en la hoja de elda solo viene el nombre, correcto o en realidad va un numero?
-        codegen.gen_quad('era',p[-1], '', '')
+        codegen.gen_quad('era',p[-1], -1, -1)
 
 def p_callparams(p):
     '''callparams : callparams_aux
@@ -280,7 +280,7 @@ def p_callparams_aux(p):
     global param_counter
     param_counter += 1
     aux = codegen.opdos.pop()
-    codegen.gen_quad('param', aux['dir'], '', 'param'+str(param_counter))
+    codegen.gen_quad('param', aux['dir'], -1, 'param'+str(param_counter))
 
 def p_expression_binop(p):
     '''expression : expression AND expression
@@ -354,6 +354,7 @@ def p_varcte_id(p):
 
 def p_varcte_id_array(p):
     '''varcte : ID array_index'''
+    print "parsed p_varcte_id_array"
     var = symtable.get_var(p[1])
     p[0] = var
 
@@ -364,19 +365,20 @@ def p_varcte_call(p):
 
 def p_array_index(p):
     '''array_index : LBRACK expression RBRACK'''
-    print p[-1]
     var = symtable.get_var(p[-1])
+    print(p[-1] + ' = ' + str(var))
     if not var:
-        errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[1]))
+        errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[-1]))
         raise SyntaxError
     elif not var['dim']:
-        errors.append("Line {}: Variable '{}' is not an array".format(p.lineno(1), p[1]))
+        errors.append("Line {}: Variable '{}' is not an array".format(p.lineno(1), p[-1]))
         raise SyntaxError
     
     exp_res = codegen.opdos.pop()
     if exp_res['type'] != int:
         errors.append("Line {}: Index must be integer:".format(p.lineno(1)))
         raise SyntaxError
+    print exp_res
     
     liminf = 0
     limsup = var['dim']-1
@@ -433,8 +435,8 @@ else:
     f = open(sys.argv[1], 'r')
     yacc.parse(f.read())
     symtable.print_symtable()
-    for quad in codegen.quads:
-          print(quad)
+    #for quad in codegen.quads:
+    #    print(quad)
     if len(errors) > 0:
         if len(errors) == 1: print('found '+str(len(errors))+' error:')
         else:                print('found '+str(len(errors))+' errors:')

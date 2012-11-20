@@ -164,7 +164,6 @@ def newtemp(type):
   tempdir = temporaldirs[type]
   temporaldirs[type] += 1
   temp_counter[type] += 1
-  print "temp_counter["+str(type)+"] = "+str(temp_counter[type])
   return tempdir
 
 def newpointer():
