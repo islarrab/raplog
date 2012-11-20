@@ -437,6 +437,7 @@ if (len(sys.argv) <= 1):
 else:
     f = open(sys.argv[1], 'r')
     yacc.parse(f.read())
+    codegen.gen_quad(-1, -1, -1, -1)
     symtable.print_symtable()
     for quad in codegen.quads:
         print(quad)
