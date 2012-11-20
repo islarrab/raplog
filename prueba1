@@ -1,11 +1,7 @@
 int main () {
 	a = 1
-	a = 2
-	a = 3
 	b = 2
 	c = 3
-	#array = [0, 1, 2, 3]
-	#testingArray = array[1]
 	print "Esto es un outprint! yay! dame un valor:"
 	scan d
 	
@@ -28,3 +24,4 @@ int main () {
 		print "expresiones funcionan!"
 	}
 }
+main()

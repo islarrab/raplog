@@ -26,23 +26,8 @@ def getTotalCuad():
 def getCuadruplo():
     return cuadruplos[ieje]
 
-def lee_arreglo(arr): #regresa los valores dentro de un arreglo    
-    aux = []
-    for e in arr:
-        if type(e) == type([]):
-            aux.append(lee_arreglo(e))
-        elif tipoMem(e) == type([]):                  
-            aux2 = lee_memoria(e)                
-            aux.append(lee_arreglo(aux2))       
-        else:
-            aux.append(lee_memoria(e))
-    return aux
-
 def cargarArchivo(fileName):
-        directorio = []
-        stackeje = [stack]
         ieje = 0
-        auxlinea = ""
 
         #Lectura del Archivo del codigo Objeto
         f = open(fileName, "r")        
@@ -78,10 +63,32 @@ def permiteEjecutar():
 def ejecutaCuadruplos():
     global ieje, arreglotemp
     while ieje < getTotalCuad():
-        cuad = cuadruplos[ieje]
-        #print cuad
+        if ieje == -1: #forward
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.forward(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            
+        elif ieje == -2: #right
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.right(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            
+        elif ieje == -3: #left
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.left(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+
+        cuad= cuadruplos[ieje]
         ieje +=1
+        
         op= cuad[0]
+        if(cuad[1]>=160000):
+            cuad[1]=lee_memoria(cuad[1])
+        if(cuad[2]>=160000):
+            cuad[2]=lee_memoria(cuad[2])
         
         if op == 0: # suma
             v1 = lee_memoria(cuad[1])
@@ -124,6 +131,8 @@ def ejecutaCuadruplos():
             guarda_en_memoria(cuad[3], v1!=v2)
          
         elif op == 8: #asignacion
+            if cuad[3]>=160000:
+                cuad[3]=lee_memoria(cuad[3])            
             if arreglotemp.valor != 0 or arreglotemp.valor:
                 v1 = arreglotemp.valor
                 arreglotemp.valor = 0
@@ -132,8 +141,7 @@ def ejecutaCuadruplos():
             if type(v1) == memglobal.tipoMem(cuad[3]):
                 guarda_en_memoria(cuad[3], v1)
             else:
-                ad = "- " + str(type(v1)) + ' cannot be assigned to ' + str(tipoMem(cuad[3]))
-                s_error(0, ad)
+                print "- " + str(type(v1)) + ' cannot be assigned to ' + str(memglobal.tipoMem(cuad[3]))
 
         elif op == 9: #and
             v1 = lee_memoria(cuad[1])
@@ -171,8 +179,7 @@ def ejecutaCuadruplos():
                 if v1 == False or v1 == 0:
                     ieje = int(cuad[3])
             else:
-                ad = "* " + str(type(v1)) + " No es valido."
-                s_error(2, ad)
+                print "* " + str(type(v1)) + " No es valido."
         
         elif op == 14: # gotov
             v1 = lee_memoria(cuad[1])
@@ -180,9 +187,7 @@ def ejecutaCuadruplos():
                 if v1 == True or v1 != 0:
                     ieje = int(cuad[3])
             else:
-                ad = "* " + str(type(v1)) + " No es valido."
-                s_error(2, ad)
-        
+                print "* " + str(type(v1)) + " No es valido."        
         elif op == 15: # goto
             ieje = int(cuad[3])
 
@@ -222,8 +227,7 @@ def ejecutaCuadruplos():
             if tipoRetorno == type(v1):
                 arreglotemp.valor = v1
             else:
-                ad = "* " + str(type(v1)) + "no es un tipo correcto, se espera el tipo", tipoRetorno, "."
-                s_error(0, ad)
+                print "* " + str(type(v1)) + "no es un tipo correcto, se espera el tipo", tipoRetorno, "."   
             ieje = arreglotemp.ieje
             
         elif op == 23: #scan
@@ -231,26 +235,17 @@ def ejecutaCuadruplos():
             if type(v1) == memglobal.tipoMem(cuad[3]):
                 guarda_en_memoria(cuad[3], v1)
             else:
-                ad = "* " + str(type(v1)) + ' no se puede asignar con un ' + str(memglobal.tipoMem(cuad[3]))
-                s_error(0, ad)
+                print "* " + str(type(v1)) + ' no se puede asignar con un ' + str(memglobal.tipoMem(cuad[3]))    
 
         elif op == 24: #verifica
             v1 = lee_memoria(cuad[1])
             li = cuad[2]
             ls = cuad[3]
             if not(v1 >= li and v1 <= ls):
-                ad = "* " + str(v1) + ' No esta dentro del limite ' + str(li) + ' - ' + str(ls)
-                s_error(0, ad)
+                print "* " + str(v1) + ' No esta dentro del limite ' + str(li) + ' - ' + str(ls)
 
-        elif op == -1:
-            v1 = lee_memoria(cuad[1])
-            turtle.forward(v1)
-        elif op == -2:
-            v1 = lee_memoria(cuad[1])
-            turtle.right(v1)
-        elif op == -3:
-            v1 = lee_memoria(cuad[1])
-            turtle.left(v1)
+        elif op == -1: #termina el programa
+            break;
         
 # Guarda la direccion
 def guarda_en_memoria(direccion, valor):    
@@ -292,9 +287,10 @@ def registro_listo(self):
     return stackeje.stack.Peek().rm.ready()
 
 def main():
-    cargarArchivo('arreglos.rlo')
+    cargarArchivo('prueba3.rlo')
     if permiteEjecutar():
         ejecutaCuadruplos()
+        turtle.done()
     #print memconst.get()
     #print memglobal.get()
 
