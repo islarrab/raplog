@@ -128,8 +128,14 @@ def p_add_proc(p):
 # Semantic rules end
 
 def p_raplog(p):
-    '''raplog : assignment raplog
-              | function raplog
+    '''raplog : function raplog
+              | assignment raplog
+              | call raplog
+              | input raplog
+              | output raplog
+              | selection raplog
+              | while raplog
+              | return raplog
               | empty'''
 
 def p_function(p):
@@ -253,12 +259,35 @@ def p_w3(p):
     codegen.gen_quad(dir.goto, -1, -1, beginning_index)
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
+# id de la funcion de la llamada actual, esta aqui afuera porque ya me dio flojera hacer las cosas bien
+call_id = ''
+
 def p_call(p):
     'call : ID c1 LPAREN callparams RPAREN'
     codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
     # reiniciar contador de parametros
     global param_counter
     param_counter = 0
+    
+    # semantica y cuadruplos para parametros
+    proc_params = symtable.get_proc(p[1])['params']
+    call_params = p[4]
+    if len(proc_params) != len(call_params):
+        errors.append('Line {}: wrong number of arguments in call to \'{}\''.format(lineno, p[1]))
+        raise SyntaxError
+    for i in range(len(call_params)):
+        if proc_params[i]['type'] != call_params[i]['type']:
+            errors.append('Line {}: inconsistent parameters in \'{}\''.format(lineno, p[1]))
+            raise SyntaxError
+        codegen.gen_quad(dir.param, call_params[i]['dir'], -1, proc_params[i]['dir'])
+    
+    # devuelve el id para usarse en expresiones
+    p[0] = p[1]
+
+def p_call_no_params(p):
+    'call : ID c1 LPAREN RPAREN'
+    codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
+    
     # devuelve el id para usarse en expresiones
     p[0] = p[1]
 
@@ -269,21 +298,16 @@ def p_c1(p):
         errors.append("Line {}: Call to an undefined function '{}'".format(p.lineno(1), p[1]))
         raise SyntaxError
     else:
-        # TODO: dir.era necesita el tamano total de la funcion, por ahora solo escribe el nombre
-        # duda: en la hoja de elda solo viene el nombre, correcto o en realidad va un numero?
-        codegen.gen_quad(dir.era,p[-1], -1, -1)
+        global call_id
+        call_id = p[-1]
+        codegen.gen_quad(dir.era, -1, -1, -1)
 
 def p_callparams(p):
-    '''callparams : callparams_aux
-                  | empty'''
-
-def p_callparams_aux(p):
-    '''callparams_aux : callparams_aux COMA expression
-                      | expression'''
-    global param_counter
-    param_counter += 1
+    '''callparams : expression COMA callparams
+                  | expression'''
     aux = codegen.opdos.pop()
-    codegen.gen_quad(dir.param, aux['dir'], -1, 'param'+str(param_counter))
+    if len(p) == 4: p[0] = [aux] + p[3]
+    else:           p[0] = [aux]
 
 def p_expression_binop(p):
     '''expression : expression AND expression
@@ -298,7 +322,6 @@ def p_expression_binop(p):
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression'''
-    print codegen.opdos
     error = codegen.binop(p[2])
     if error:
         errors.append(error.format(lineno))
@@ -357,7 +380,6 @@ def p_varcte_id(p):
 
 def p_varcte_id_array(p):
     '''varcte : ID array_index'''
-    print "parsed p_varcte_id_array"
     var = symtable.get_var(p[1])
     p[0] = var
 
@@ -369,7 +391,6 @@ def p_varcte_call(p):
 def p_array_index(p):
     '''array_index : LBRACK expression RBRACK'''
     var = symtable.get_var(p[-1])
-    print(p[-1] + ' = ' + str(var))
     if not var:
         errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[-1]))
         raise SyntaxError
@@ -381,7 +402,6 @@ def p_array_index(p):
     if exp_res['type'] != int:
         errors.append("Line {}: Index must be integer:".format(p.lineno(1)))
         raise SyntaxError
-    print exp_res
     
     liminf = 0
     limsup = var['dim']-1

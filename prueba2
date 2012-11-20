@@ -30,13 +30,14 @@ int main (){
 	i = 1
 	while i <= 10 {
 		res = 0
-		fibonacci(i, res)
+		fibonacci(i)
 		put res
 		put ", "
 		i = i + 1
 	}
 	res = 0
-	factorial(10, res)
+	factorial(10)
 	put "factorial de 10 es "
 	put res
 }
+main()
