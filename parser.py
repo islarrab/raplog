@@ -133,7 +133,7 @@ def p_raplog(p):
 def p_function(p):
     'function : type ID add_proc defparams statements-block'
     symtable.end_current_proc()
-    codegen.gen_quad('ret', -1, -1, -1)
+    codegen.gen_quad(dir.ret, -1, -1, -1)
 
 def p_defparams_parens(p):
     '''defparams : LPAREN defparams1 RPAREN
@@ -166,7 +166,7 @@ def p_statement(p):
 def p_return(p):
     '''return : RETURN expression'''
     aux = codegen.opdos.pop()
-    codegen.gen_quad('return', aux['dir'], -1, -1)
+    codegen.gen_quad(dir.retorno, aux['dir'], -1, -1)
 
 def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
@@ -177,7 +177,7 @@ def p_assignment_expression(p):
 def p_assignment_index_expression(p):
     '''assignment : ID array_index EQ expression'''
     exp_res = codegen.opdos.pop()
-    var = symtable.add_var(p[1], exp_res['type'], None)
+    var = symtable.get_var(p[1])
     codegen.gen_quad(dir.asigna, exp_res['dir'], -1, var['dir'])
 
 def p_assignment_array(p):
@@ -195,12 +195,12 @@ def p_input(p):
     var = symtable.get_var(p[2])
     if not var:
       var = symtable.add_var(p[2], str, None)
-    codegen.gen_quad('scan', -1, -1, var['dir'])
+    codegen.gen_quad(dir.scan, -1, -1, var['dir'])
 
 def p_output(p):
     'output : PUT expression'
     aux = codegen.opdos.pop()
-    codegen.gen_quad('print', aux['dir'], -1, -1)
+    codegen.gen_quad(dir.printt, aux['dir'], -1, -1)
 
 def p_selection(p):
     'selection : IF expression i1 statements-block i3'
@@ -252,7 +252,7 @@ def p_w3(p):
 
 def p_call(p):
     'call : ID c1 LPAREN callparams RPAREN'
-    codegen.gen_quad('gosub', symtable.get_proc(p[1])['start_no'], -1, -1)
+    codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
     # reiniciar contador de parametros
     global param_counter
     param_counter = 0
@@ -266,9 +266,9 @@ def p_c1(p):
         errors.append("Line {}: Call to an undefined function '{}'".format(p.lineno(1), p[1]))
         raise SyntaxError
     else:
-        # TODO: 'era' necesita el tamano total de la funcion, por ahora solo escribe el nombre
+        # TODO: dir.era necesita el tamano total de la funcion, por ahora solo escribe el nombre
         # duda: en la hoja de elda solo viene el nombre, correcto o en realidad va un numero?
-        codegen.gen_quad('era',p[-1], -1, -1)
+        codegen.gen_quad(dir.era,p[-1], -1, -1)
 
 def p_callparams(p):
     '''callparams : callparams_aux
@@ -280,7 +280,7 @@ def p_callparams_aux(p):
     global param_counter
     param_counter += 1
     aux = codegen.opdos.pop()
-    codegen.gen_quad('param', aux['dir'], -1, 'param'+str(param_counter))
+    codegen.gen_quad(dir.param, aux['dir'], -1, dir.param+str(param_counter))
 
 def p_expression_binop(p):
     '''expression : expression AND expression
@@ -435,8 +435,8 @@ else:
     f = open(sys.argv[1], 'r')
     yacc.parse(f.read())
     symtable.print_symtable()
-    #for quad in codegen.quads:
-    #    print(quad)
+    for quad in codegen.quads:
+        print(quad)
     if len(errors) > 0:
         if len(errors) == 1: print('found '+str(len(errors))+' error:')
         else:                print('found '+str(len(errors))+' errors:')

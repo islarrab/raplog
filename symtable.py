@@ -51,7 +51,7 @@ proc_table = {'proc1': {'start_no': #,
 numero de parametros = len(proc_table['params']) 
 numero de variables = len(proc_table['var_table'])
 '''
-proc_table = {'program' : {'start_no':1,
+proc_table = {'program' : {'start_no':0,
                            'var_counter':var_counter,
                            'temp_counter':temp_counter,
                            'type':None,
@@ -176,7 +176,5 @@ def print_symtable():
     for proc in proc_table:
        print(proc+': ')
        for field in proc_table[proc]:
-           print('    '+str(proc_table[proc][field]))
-    print ("Temporals:")
-    #for temp in temporaldirs:
+           print('    '+str(field)+' : '+str(proc_table[proc][field]))
 

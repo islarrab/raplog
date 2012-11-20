@@ -39,6 +39,8 @@ era = 18
 gosub = 19
 ret = 20
 param = 21
+retorno = 22
+scan = 23
 
 of = {
 '+':suma,
