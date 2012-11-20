@@ -1,4 +1,4 @@
-class Memory:
+class Memoria:
     def __init__(self, ofst):        
         self.mem = dict()
         self.offset = ofst
@@ -7,9 +7,8 @@ class Memory:
         self.memstr = 20000
         self.membool = 30000
 
-    # 
     def set(self, direccion, value):        
-        if self.offset == 200000:
+        if self.offset == 200000:   #por si la memoria ya se lleno crea mas bloques
             if type(value) == int:
                 rdireccion = self.memint
                 self.memint = self.memint + 1
@@ -22,12 +21,9 @@ class Memory:
             elif type(value) == bool:
                 rdireccion = self.membool
                 self.membool = self.membool + 1
-                
-            self.revisaVacio()
-                    
+            self.revisaVacio()                    
         else:
-            rdireccion = direccion - self.offset
-            
+            rdireccion = direccion - self.offset            
         self.mem[rdireccion] = value
         return rdireccion + self.offset
 
@@ -35,7 +31,7 @@ class Memory:
         return self.mem
 
     # Regresa el valor en alguna direccion o imrpime error.
-    def read(self, direccion):        
+    def lee(self, direccion):        
         rdireccion = direccion - self.offset
         if rdireccion in self.mem:
             return self.mem[rdireccion]
@@ -54,14 +50,13 @@ class Memory:
             flag = 1
         if self.membool >= 40000:
             flag = 1
-
         if flag == 1:
             print "La memoria esta vacia. Se cerrara el programa."
             exit(1)
 
     #Regresa de que clase es una direccion
-    def mem_class(self, direccion):
-        if direccion >= 200000:             # Resto
+    def claseMem(self, direccion):
+        if direccion >= 200000:            
             return 4
         if direccion >= 120000:             # Temporal
             return 3
@@ -71,9 +66,8 @@ class Memory:
             return 1
         return 0                          # Global
 
-    #Regresa el tipo de la variable en enteros
-    #0=int 1=float 2=str 3=bool
-    def typeNum(t):        
+    #Regresa el tipo de la variable en enteros 0=int 1=float 2=str 3=bool
+    def tipoVar(t):        
         if t == type(0):
             return 0
         if t == type(0.0):
@@ -84,28 +78,26 @@ class Memory:
             return 3
 
     #Regresa el tipo de una direccion
-    def mem_type(self,direccion):        
-        if direccion >= 200000:                # Resto
+    def tipoMem(self,direccion):        
+        if direccion >= 200000:               
             direccion = direccion - 200000
-        elif direccion >= 120000:              # Temporal
+        elif direccion >= 120000:             
             direccion = direccion - 120000
-        elif direccion >= 80000:               # Constante
+        elif direccion >= 80000:               
             direccion = direccion - 80000
-        elif direccion >= 40000:               # Local
+        elif direccion >= 40000:               
             direccion = direccion - 40000
-
         if direccion < 0:
             print "Lo siento pero no existe la memoria negativa:", direccion
             exit(1)
-
         if direccion < 10000:
-            return type(0)            # int
+            return int           
         elif direccion < 20000:
-            return type(0.0)          # float
+            return float          
         elif direccion < 30000:
-            return type("")           # str
+            return str          
         elif direccion < 40000:
-            return bool           # bool
+            return bool          
         else:
             return 5
         
