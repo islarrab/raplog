@@ -35,7 +35,7 @@ def unop(oper):
     error = "Line {lineno}: Can't use {oper} on {op1}" 
     return error.format(oper=oper, op1=opdo1['type'])
   temp = {'dir':symtable.newtemp(newtype), 'type': newtype}
-  gen_quad(dir.of[oper], opdo1['dir'], '', temp['dir'])
+  gen_quad(dir.of[oper], opdo1['dir'], -1, temp['dir'])
   opdos.append(temp)
 
 def binop(oper):

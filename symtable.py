@@ -113,16 +113,25 @@ def end_current_proc():
     temp_counter = proc_table['program']['temp_counter']
 
 def add_var(name, type, dim):
-    var = { 'dir': localdirs[type],
-            'type': type,
-            'dim': dim }
-    var_table[name] = var
-    if dim:
-        localdirs[type] += dim
-        var_counter[type] += dim
+    var = {}
+    if name in var_table:
+        # la variable ya existe, solo reasigna tipo y dimensiones
+        # TODO: esto va a causar conflictos a la hora de cambiar de tipos
+        var = { 'dir': var_table[name]['dir'],
+                'type': type,
+                'dim': dim }
     else:
-        localdirs[type] += 1
-        var_counter[type] += 1
+        # la variable no existe, la crea y suma a contadores
+        var = { 'dir': localdirs[type],
+                'type': type,
+                'dim': dim }
+        if dim:
+            localdirs[type] += dim
+            var_counter[type] += dim
+        else:
+            localdirs[type] += 1
+            var_counter[type] += 1
+    var_table[name] = var
     return var
 
 def add_param(name, type):
