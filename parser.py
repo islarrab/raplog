@@ -441,15 +441,5 @@ else:
         for error in errors:
             print('    '+error)
     else:
-        
-        
-        # build the actual list to be written to the object file
-        # first section, the count of global variables and temporals
-        global_counts = symtable.proc_table['program']['var_counter'].values()
-        
-        
-        
-        
-        
         print('Program has no errors')
         codegen.write_to_file(sys.argv[1].split('.')[0]+'.rlo')

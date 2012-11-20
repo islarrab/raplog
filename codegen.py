@@ -56,16 +56,17 @@ def write_to_file(filename):
   f = open(filename, 'w')
   
   # seccion de globales
-  globs = symtable.proc_table['program']['var_counter']
-  f.write(str(globs[int])+' '+str(globs[float])+' '+str(globs[str])+' '+str(globs[bool])+' ')
+  #globs = symtable.proc_table['program']['var_counter']
+  #f.write(str(globs[int])+' '+str(globs[float])+' '+str(globs[str])+' '+str(globs[bool])+' ')
+  
   # seccion de temporales, saca el maximo de temporales de todos los procedimientos
-  t = {int:0, float:0, str:0, bool:0}
-  for proc in symtable.proc_table:
-    t[int] =   max(t[int],   symtable.proc_table[proc]['temp_counter'][int])
-    t[float] = max(t[float], symtable.proc_table[proc]['temp_counter'][float])
-    t[str] =   max(t[str],   symtable.proc_table[proc]['temp_counter'][str])
-    t[bool] =  max(t[bool],  symtable.proc_table[proc]['temp_counter'][bool])
-  f.write(str(t[int])+' '+str(t[float])+' '+str(t[str])+' '+str(t[bool])+'\n')
+  #t = {int:0, float:0, str:0, bool:0}
+  #for proc in symtable.proc_table:
+  #  t[int] =   max(t[int],   symtable.proc_table[proc]['temp_counter'][int])
+  #  t[float] = max(t[float], symtable.proc_table[proc]['temp_counter'][float])
+  #  t[str] =   max(t[str],   symtable.proc_table[proc]['temp_counter'][str])
+  #  t[bool] =  max(t[bool],  symtable.proc_table[proc]['temp_counter'][bool])
+  #f.write(str(t[int])+' '+str(t[float])+' '+str(t[str])+' '+str(t[bool])+'\n')
   
   # seccion de constantes
   for constant in symtable.constants.keys():

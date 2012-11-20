@@ -33,9 +33,12 @@ printt = 12
 gotof = 13
 gotov = 14
 goto = 15
-<<<<<<< HEAD
 menorigualq = 16
 mayorigualq = 17
+era = 18
+gosub = 19
+ret = 20
+param = 21
 
 of = {
 '+':suma,
@@ -53,9 +56,4 @@ of = {
 'or':orr,
 'not':nott,
 }
-=======
-era = 16
-gosub = 17
-ret = 18
-param = 19
->>>>>>> funciones
+
