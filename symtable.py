@@ -51,12 +51,38 @@ proc_table = {'proc1': {'start_no': #,
 numero de parametros = len(proc_table['params']) 
 numero de variables = len(proc_table['var_table'])
 '''
-proc_table = {'program' : {'start_no':0,
-                           'var_counter':var_counter,
-                           'temp_counter':temp_counter,
-                           'type':None,
-                           'params':[],
-                           'var_table':var_table}}
+proc_table = {
+    'program' : {
+        'start_no':0,
+        'var_counter':var_counter,
+        'temp_counter':temp_counter,
+        'type':None,
+        'params':[],
+        'var_table':var_table},
+    'forward' : {
+        'start_no':dir.forward,
+        'var_counter':None,
+        'temp_counter':None,
+        'type':None,
+        'params':[{'dir':40000, 'type':int, 'dim':None}],
+        'var_table':None},
+    'right' : {
+        'start_no':dir.right,
+        'var_counter':None,
+        'temp_counter':None,
+        'type':None,
+        'params':[{'dir':40000, 'type':int, 'dim':None}],
+        'var_table':None},
+    'left' : {
+        'start_no':dir.left,
+        'var_counter':None,
+        'temp_counter':None,
+        'type':None,
+        'params':[{'dir':40000, 'type':int, 'dim':None}],
+        'var_table':None},
+    
+}
+              
 current_proc = 'program'
 
 

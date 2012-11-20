@@ -26,18 +26,18 @@ int main (){
 	_asd123ASD = 1
 	ABC_DEF = 2
 	_______ = 3 # segun sintaxis esto es un id aceptable
-	put "secuencia fibonacci hasta el 10° numero"
+	print "secuencia fibonacci hasta el 10° numero"
 	i = 1
 	while i <= 10 {
 		res = 0
 		fibonacci(i)
-		put res
-		put ", "
+		print res
+		print ", "
 		i = i + 1
 	}
 	res = 0
 	factorial(10)
-	put "factorial de 10 es "
-	put res
+	print "factorial de 10 es "
+	print res
 }
 main()

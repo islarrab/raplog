@@ -41,6 +41,12 @@ ret = 20
 param = 21
 retorno = 22
 scan = 23
+verifica = 24
+
+# funciones pre-definidas
+forward = -1
+right = -2
+left = -3
 
 of = {
 '+':suma,

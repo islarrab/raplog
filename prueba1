@@ -6,25 +6,25 @@ int main () {
 	c = 3
 	#array = [0, 1, 2, 3]
 	#testingArray = array[1]
-	put "Esto es un output! yay! dame un valor:"
-	get d
+	print "Esto es un outprint! yay! dame un valor:"
+	scan d
 	
 	if a*b > a+c
 	{
-		put "a*b > a+c es verdadero!"
-		put a
+		print "a*b > a+c es verdadero!"
+		print a
 	} else {
-		put "a*b > a+c es falso!"
+		print "a*b > a+c es falso!"
 	}
 	
 	while a<c
 	{
 		a = a + 1
-		put "a"
+		print "a"
 	}
 	
 	if not a>b and not b>c or a+b < b+c
 	{
-		put "expresiones funcionan!"
+		print "expresiones funcionan!"
 	}
 }

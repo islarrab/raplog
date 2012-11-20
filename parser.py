@@ -15,8 +15,8 @@ reserved = {
    'if' : 'IF',
    'else' : 'ELSE',
    'while' : 'WHILE',
-   'get' : 'GET',
-   'put' : 'PUT',
+   'scan' : 'SCAN',
+   'print' : 'PRINT',
    'and' : 'AND',
    'or' : 'OR',
    'not' : 'NOT',
@@ -121,9 +121,8 @@ def p_new_scope(p):
 
 def p_add_proc(p):
     'add_proc :'
-    # la razon de curr_ins+2 es para que se brinque el goto generado en cada funcion
-    symtable.add_proc(p[-1], codegen.curr_ins+2, p[-2])
     codegen.gen_quad(dir.goto, -1, -1, -1)
+    symtable.add_proc(p[-1], codegen.curr_ins+1, p[-2])
     codegen.jumps.append(codegen.curr_ins)
 # Semantic rules end
 
@@ -200,14 +199,14 @@ def p_assignment_array_2(p):
     var = symtable.add_var(p[2], p[1], p[4])
 
 def p_input(p):
-    'input : GET ID'
+    'input : SCAN ID'
     var = symtable.get_var(p[2])
     if not var:
       var = symtable.add_var(p[2], str, None)
     codegen.gen_quad(dir.scan, -1, -1, var['dir'])
 
 def p_output(p):
-    'output : PUT expression'
+    'output : PRINT expression'
     aux = codegen.opdos.pop()
     codegen.gen_quad(dir.printt, aux['dir'], -1, -1)
 
@@ -258,9 +257,6 @@ def p_w3(p):
     beginning_index = codegen.jumps.pop()
     codegen.gen_quad(dir.goto, -1, -1, beginning_index)
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
-
-# id de la funcion de la llamada actual, esta aqui afuera porque ya me dio flojera hacer las cosas bien
-call_id = ''
 
 def p_call(p):
     'call : ID c1 LPAREN callparams RPAREN'
@@ -407,7 +403,7 @@ def p_array_index(p):
     
     liminf = 0
     limsup = var['dim']-1
-    codegen.gen_quad('ver', exp_res['dir'], liminf, limsup)
+    codegen.gen_quad(dir.verifica, exp_res['dir'], liminf, limsup)
     basedir = symtable.add_constant(var['dir'])
     pointer = symtable.newpointer()
     codegen.gen_quad(dir.suma, basedir['dir'], exp_res['dir'], pointer)
