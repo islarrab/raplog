@@ -189,14 +189,15 @@ def p_assignment_index_expression(p):
     codegen.gen_quad(dir.asigna, exp_res['dir'], -1, var['dir'])
 
 def p_assignment_array(p):
-    '''assignment : type ID EQ array'''
-    var = symtable.add_var(p[2], p[1], len(p[4]))
-    for i in range(len(p[4])):
-        codegen.gen_quad(dir.asigna, p[4][i]['dir'], -1, var['dir']+i)
+    '''assignment : ID EQ array'''
+    array = p[3]
+    var = symtable.add_var(p[1], int, len(array))
+    for i in range(len(array)):
+        codegen.gen_quad(dir.asigna, array[i]['dir'], -1, var['dir']+i)
 
 def p_assignment_array_2(p):
-    '''assignment : type ID LBRACK INT RBRACK'''
-    var = symtable.add_var(p[2], p[1], p[4])
+    '''assignment : ID EQ type LBRACK INT RBRACK'''
+    var = symtable.add_var(p[1], p[3], p[5])
 
 def p_input(p):
     'input : SCAN ID'
