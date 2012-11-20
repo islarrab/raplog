@@ -302,17 +302,14 @@ def p_c1(p):
 
 def p_callparams(p):
     '''callparams : expression COMA callparams
-                  | expression'''
+                  | '''
     aux = codegen.opdos.pop()
-    if len(p) == 4: p[0] = [aux] + p[3]
-    else:           p[0] = [aux]
+    p[0] = [aux] + p[3]
 
-def p_callparams(p):
-    '''callparams : expression COMA callparams
-                  | expression'''
+def p_callparams_2(p):
+    '''callparams : expression'''
     aux = codegen.opdos.pop()
-    if len(p) == 4: p[0] = [aux] + p[3]
-    else:           p[0] = [aux]
+    p[0] = [aux]
 
 def p_expression_binop(p):
     '''expression : expression AND expression
