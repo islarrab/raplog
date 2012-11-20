@@ -9,7 +9,6 @@ import dir
 
 errors = []
 lineno = 0
-param_counter = 0
 
 # Reserved words
 reserved = {
@@ -264,10 +263,6 @@ call_id = ''
 
 def p_call(p):
     'call : ID c1 LPAREN callparams RPAREN'
-    codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
-    # reiniciar contador de parametros
-    global param_counter
-    param_counter = 0
     
     # semantica y cuadruplos para parametros
     proc_params = symtable.get_proc(p[1])['params']
@@ -280,6 +275,8 @@ def p_call(p):
             errors.append('Line {}: inconsistent parameters in \'{}\''.format(lineno, p[1]))
             raise SyntaxError
         codegen.gen_quad(dir.param, call_params[i]['dir'], -1, proc_params[i]['dir'])
+    
+    codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
     
     # devuelve el id para usarse en expresiones
     p[0] = p[1]
