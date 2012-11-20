@@ -185,7 +185,7 @@ def p_assignment_expression(p):
 def p_assignment_index_expression(p):
     '''assignment : ID array_index EQ expression'''
     exp_res = codegen.opdos.pop()
-    var = symtable.get_var(p[1])
+    var = p[2]
     codegen.gen_quad(dir.asigna, exp_res['dir'], -1, var['dir'])
 
 def p_assignment_array(p):
