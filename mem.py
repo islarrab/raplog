@@ -23,15 +23,15 @@ class Memoria:
                 self.membool = self.membool + 1
             self.revisaVacio()                    
         else:
-            rdireccion = direccion - self.offset            
+            rdireccion = direccion - self.offset
         self.mem[rdireccion] = value
         return rdireccion + self.offset
 
     def get(self):
         return self.mem
 
-    # Regresa el valor en alguna direccion o imrpime error.
-    def lee(self, direccion):        
+    # Regresa el valor en alguna direccion o imprime error.
+    def lee(self, direccion):
         rdireccion = direccion - self.offset
         if rdireccion in self.mem:
             return self.mem[rdireccion]
@@ -68,17 +68,17 @@ class Memoria:
 
     #Regresa el tipo de la variable en enteros 0=int 1=float 2=str 3=bool
     def tipoVar(t):        
-        if t == type(0):
+        if t == int:
             return 0
-        if t == type(0.0):
+        if t == float:
             return 1
-        if t == type(""):
+        if t == str:
             return 2
         if t == bool:
             return 3
 
     #Regresa el tipo de una direccion
-    def tipoMem(self,direccion):        
+    def tipoMem(self,direccion):
         if direccion >= 200000:               
             direccion = direccion - 200000
         elif direccion >= 120000:             

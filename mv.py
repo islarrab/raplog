@@ -5,11 +5,12 @@ import sys
 import os
 from mem import *
 from fun import *
+import shlex
 
 memglobal = Memoria(0)
 memconst = Memoria(80000)
 memresto = Memoria(200000)
-arreglotemp = 0
+arreglotemp = Funciones()
 cuadruplos = []
 ieje = 0
 param = []
@@ -49,7 +50,7 @@ def cargarArchivo(fileName):
         #Lectura de memoria
         while(linea != '---\n'):
             #Lectura de constantes
-            c = linea.split()
+            c = shlex.split(linea)
             #checando tipo de la constante
             t = memglobal.tipoMem(int(c[0]))
             guarda_en_memoria(int(c[0]),t(c[1]))
@@ -59,7 +60,6 @@ def cargarArchivo(fileName):
         while True:
             if not linea: break
             c = [int(n) for n in linea.split()]
-            #cuadruplo = cuad.Cuadruplos(c[0], cuad[1], cuad[2], cuad[3])
             cuadruplos.append(c)
             #Siguiente linea
             linea = f.readline()
@@ -78,6 +78,7 @@ def ejecutaCuadruplos():
     global ieje, arreglotemp
     while ieje < getTotalCuad():
         cuad = cuadruplos[ieje]
+        ieje +=1
         op= cuad[0]
         
         if op == 0: # suma
@@ -121,8 +122,11 @@ def ejecutaCuadruplos():
             guarda_en_memoria(cuad[3], v1!=v2)
          
         elif op == 8: #asignacion
-            v1 = lee_memoria(cuad[1])            
-            if type(v1) == tipoMem(cuad[3]):
+            if cuad[1] == -7:
+                v1 = arreglotemp.valor
+            else:
+                v1 = lee_memoria(cuad[1])
+            if type(v1) == memglobal.tipoMem(cuad[3]):
                 guarda_en_memoria(cuad[3], v1)
             else:
                 ad = "- " + str(type(v1)) + ' cannot be assigned to ' + str(tipoMem(cuad[3]))
@@ -152,68 +156,96 @@ def ejecutaCuadruplos():
                 guarda_en_memoria(cuad[3], True)
             
         elif op == 12: # print
-            v1 = lee_memoria(cuad[3])
+            v1 = lee_memoria(cuad[1])
             if type(v1) == type([]):
-                print lee_arreglo(v1),
+                print lee_arreglo(v1)
             else:
                 print v1
         
         elif op == 13: # gotof
             v1 = lee_memoria(cuad[1])
-            if type(v1) == type(True) or type(v1) == type(0):
+            if type(v1) == bool or type(v1) == int:
                 if v1 == False or v1 == 0:
                     ieje = int(cuad[3])
             else:
-                ad = "- " + str(type(v1)) + " No es valido."
+                ad = "* " + str(type(v1)) + " No es valido."
                 s_error(2, ad)
         
         elif op == 14: # gotov
             v1 = lee_memoria(cuad[1])
-            if type(v1) == type(True) or type(v1) == type(0):
+            if type(v1) == bool or type(v1) == int:
                 if v1 == True or v1 != 0:
                     ieje = int(cuad[3])
             else:
-                ad = "- " + str(type(v1)) + " No es valido."
+                ad = "* " + str(type(v1)) + " No es valido."
                 s_error(2, ad)
         
         elif op == 15: # goto
             ieje = int(cuad[3])
 
-        elif op == 16: #era
+        elif op == 16: #menorigual que
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1<=v2)
+
+        elif op == 17: #mayorigual que
+            v1 = lee_memoria(cuad[1])
+            v2 = lee_memoria(cuad[2])
+            guarda_en_memoria(cuad[3], v1>=v2)
+
+        elif op == 18: #era
             arrFun = Funciones()
         
-        elif op == 17: # gosub
+        elif op == 19: # gosub
             arreglotemp.ieje = ieje
             stack.append(arreglotemp)
-            ieje = c[3]
+            ieje = cuad[1]
             arreglotemp = arrFun
         
-        elif op == 18: # ret
-            arreglotemp = stack.pop()
-            ieje = arreglotemp.ieje
+        elif op == 20: # ret
+            if not arreglotemp:
+                arreglotemp = stack.pop()
+                ieje = arreglotemp.ieje
             
-        elif op == 19: # param
-            v1 = lee_memoria(c[1])
-            direccionP = c[2]
+        elif op == 21: # param
+            v1 = lee_memoria(cuad[1])
+            direccionP = cuad[3]
             arrFun.setParam(direccionP, v1, arreglotemp, memresto)
 
+        elif op == 22: # return
+            tipoRetorno = memglobal.tipoMem(cuad[1])
+            v3 = lee_memoria(cuad[1])
+            arreglotemp = stack.pop()
         
-        
-        ieje += 1
+            if tipoRetorno == type(v3):
+                arreglotemp.valor = v3
+            else:
+                ad = "* " + str(type(v3)) + "no es un tipo correcto, se espera el tipo", type_ret, "."
+                s_error(0, ad)
+            ieje = arreglotemp.ieje
+            
+        elif op == 23: #scan
+            v1 = memglobal.tipoMem(cuad[3])(raw_input("-"))
+            if type(v1) == memglobal.tipoMem(cuad[3]):
+                guarda_en_memoria(cuad[3], v1)
+            else:
+                ad = "* " + str(type(v1)) + ' no se puede asignar con un ' + str(memglobal.tipoMem(cuad[3]))
+                #s_error(0, ad)
+    
         
 # Guarda la direccion
-def guarda_en_memoria(direccion, value):    
+def guarda_en_memoria(direccion, valor):    
     class_memory = memglobal.claseMem(direccion)
     if class_memory == 0:
-        memglobal.set(direccion, value)
+        memglobal.set(direccion, valor)
     elif class_memory == 1:
-        arreglotemp.memlocal.set(direccion, value)
+        arreglotemp.memlocal.set(direccion, valor)
     elif class_memory == 2:
-        memconst.set(direccion, value)
+        memconst.set(direccion, valor)
     elif class_memory == 3:
-        arreglotemp.memtemp.set(direccion, value)
+        arreglotemp.memtemp.set(direccion, valor)
     elif class_memory == 4:
-        return memresto.set(direccion, value)
+        return memresto.set(direccion, valor)
     else:
         print "Error en memoria:", direccions, class_memory
         exit(1)
@@ -241,11 +273,11 @@ def registro_listo(self):
     return stackeje.stack.Peek().rm.ready()
 
 def main():
-    cargarArchivo('cod.obj')
+    cargarArchivo('prueba2.rlo')
     if permiteEjecutar():
         ejecutaCuadruplos()
-    print memconst.get()
-    print memglobal.get()
+    #print memconst.get()
+    #print memglobal.get()
 
 
 
