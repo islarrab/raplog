@@ -20,17 +20,17 @@ temporaldirs = {int:dir.tempint,
                 float:dir.tempfloat,
                 str:dir.tempstr,
                 bool:dir.tempbool}
-
+pointer_count = 0
 
 maxtemps = {int:0,float:0,str:0,bool:0}
 
 # variable table
 '''
-una variable tiene el formato {'dir': x, 'type': y, 'value': z}
+una variable tiene el formato {'dir': x, 'type': y, 'dim': z}
 por lo tanto var_table tiene el formato:
-{  {var1: {'dir': x1, 'type': y1, 'value': z1},
+{  {var1: {'dir': x1, 'type': y1, 'dim': z1},
    ...
-   {varN: {'dir': xN, 'type': yN, 'value': zN} }
+   {varN: {'dir': xN, 'type': yN, 'dim': zN} }
 '''
 var_table = { }
 scopes = [ ]
@@ -51,7 +51,12 @@ proc_table = {'proc1': {'start_no': #,
 numero de parametros = len(proc_table['params']) 
 numero de variables = len(proc_table['var_table'])
 '''
-proc_table = {'program' : {'start_no':1, 'var_counter':var_counter, 'temp_counter':temp_counter, 'type':None, 'params':[], 'var_table':var_table}}
+proc_table = {'program' : {'start_no':1,
+                           'var_counter':var_counter,
+                           'temp_counter':temp_counter,
+                           'type':None,
+                           'params':[],
+                           'var_table':var_table}}
 current_proc = 'program'
 
 
@@ -83,7 +88,7 @@ def add_proc(proc_name, start_no, type):
     global proc_table
     
     # agrega el procedimiento como variable global
-    add_var(proc_name, type)
+    add_var(proc_name, type, None)
     
     reset_locals()
     current_proc = proc_name
@@ -107,22 +112,28 @@ def end_current_proc():
     var_counter = proc_table['program']['var_counter']
     temp_counter = proc_table['program']['temp_counter']
 
-def add_var(name, type):
-    global var_table
-    global counter
+def add_var(name, type, dim):
     var = { 'dir': localdirs[type],
-            'type': type}
+            'type': type,
+            'dim': dim }
+    var_table[name] = var
+    if dim:
+        localdirs[type] += dim
+        var_counter[type] += dim
+    else:
+        localdirs[type] += 1
+        var_counter[type] += 1
+    return var
+
+def add_param(name, type):
+    var = { 'dir': localdirs[type],
+            'type': type,
+            'dim': None }
+    proc_table[current_proc]['params'].append(var)
     var_table[name] = var
     localdirs[type] += 1
     var_counter[type] += 1
     return var
-
-def add_param(name, type):
-    global proc_table
-    # TODO: asignar bien 'dir'
-    proc_table[current_proc]['params'].append({'name':name, 'dir':localdirs[type], 'type':type})
-    localdirs[type] += 1
-    var_counter[type] += 1
 
 def get_proc(proc):
     if proc in proc_table:
@@ -133,11 +144,6 @@ def get_proc(proc):
 def get_var(name):
     if (name in proc_table[current_proc]['var_table']):
         return proc_table[current_proc]['var_table'][name]
-    for param in proc_table[current_proc]['params']:
-        if name in param.values():
-            return param
-    if (name in proc_table[current_proc]['params']):
-        return proc_table[current_proc]['params'][name]
     if (name in proc_table['program']['var_table']):
         return proc_table['program']['var_table'][name]
     return None
@@ -161,6 +167,12 @@ def newtemp(type):
   print "temp_counter["+str(type)+"] = "+str(temp_counter[type])
   return tempdir
 
+def newpointer():
+  global pointer_count
+  pointer = dir.pointer + pointer_count
+  pointer_count += 1
+  return pointer
+  
 def print_symtable():
     for proc in proc_table:
        print(proc+': ')

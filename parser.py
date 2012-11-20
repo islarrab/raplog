@@ -122,27 +122,24 @@ def p_new_scope(p):
 
 def p_add_proc(p):
     'add_proc :'
-    # TODO: pasar el tipo que regresa y los parametros
     symtable.add_proc(p[-1], codegen.curr_ins+1, p[-2])
 # Semantic rules end
 
 def p_raplog(p):
     '''raplog : assignment raplog
-              | function raplog'''
-    
-def p_raplog_empty(p):
-    'raplog : empty'
+              | function raplog
+              | empty'''
 
 def p_function(p):
     'function : type ID add_proc defparams statements-block'
     symtable.end_current_proc()
-    codegen.gen_quad('return', '', '', '')
+    codegen.gen_quad('ret', '', '', '')
 
-def p_defparams(p):
+def p_defparams_parens(p):
     '''defparams : LPAREN defparams1 RPAREN
                  | LPAREN RPAREN'''
 
-def p_defparams1(p):
+def p_defparams(p):
     '''defparams1 : type ID 
                   | type ID COMA defparams1'''
     symtable.add_param(p[2], p[1])
@@ -174,21 +171,30 @@ def p_return(p):
 def p_assignment_expression(p):
     '''assignment : ID EQ expression'''
     exp_res = codegen.opdos.pop()
-    print (p[1]+' = '+str(exp_res))
-    var = symtable.add_var(p[1], exp_res['type'])
-    codegen.gen_quad(p[2], exp_res['dir'], '', var['dir'])
+    var = symtable.add_var(p[1], exp_res['type'], None)
+    codegen.gen_quad(dir.asigna, exp_res['dir'], '', var['dir'])
+
+def p_assignment_index_expression(p):
+    '''assignment : ID array_index EQ expression'''
+    exp_res = codegen.opdos.pop()
+    var = symtable.add_var(p[1], exp_res['type'], None)
+    codegen.gen_quad(dir.asigna, exp_res['dir'], '', var['dir'])
 
 def p_assignment_array(p):
-    '''assignment : ID EQ array'''
-    # agregar tipo de arreglo para facilitar el manejo
-    #var = symtable.add_var(p[1], p[1][
-    # TODO: como se manejan los arreglos en cuadruplos?
+    '''assignment : type ID EQ array'''
+    var = symtable.add_var(p[2], p[1], len(p[4]))
+    for i in range(len(p[4])):
+        codegen.gen_quad(dir.asigna, p[4][i]['dir'], '', var['dir']+i)
+
+def p_assignment_array_2(p):
+    '''assignment : type ID LBRACK INT RBRACK'''
+    var = symtable.add_var(p[2], p[1], p[4])
 
 def p_input(p):
     'input : GET ID'
     var = symtable.get_var(p[2])
     if not var:
-      var = symtable.add_var(p[2], str)
+      var = symtable.add_var(p[2], str, None)
     codegen.gen_quad('scan', '', '', var['dir'])
 
 def p_output(p):
@@ -207,12 +213,12 @@ def p_i1(p):
     aux = codegen.opdos.pop()
     if (aux['type'] != bool and aux['type'] != int):
         errors.append('Line {}: expression must be boolean'.format(lineno))
-    codegen.gen_quad(dir.of['gotof'], aux['dir'], '', '')
+    codegen.gen_quad(dir.gotof, aux['dir'], '', '')
     codegen.jumps.append(codegen.curr_ins)
 
 def p_i2(p):
     'i2 :'
-    codegen.gen_quad('goto', '', '', '')
+    codegen.gen_quad(dir.goto, '', '', '')
     i = codegen.jumps.pop()
     codegen.quads[i][3] = codegen.curr_ins+1
     codegen.jumps.append(codegen.curr_ins)
@@ -234,14 +240,14 @@ def p_w2(p):
     aux = codegen.opdos.pop()
     if (aux['type'] != bool):
         errors.append('Line {}: expresion must be boolean'.format(lineno))
-    codegen.gen_quad(dir.of['gotof'], aux['dir'], '', '')
+    codegen.gen_quad(dir.gotof, aux['dir'], '', '')
     codegen.jumps.append(codegen.curr_ins)
     
 def p_w3(p):
     'w3 :'
     gotof_index = codegen.jumps.pop()
     beginning_index = codegen.jumps.pop()
-    codegen.gen_quad(dir.of['goto'], '', '', beginning_index)
+    codegen.gen_quad(dir.goto, '', '', beginning_index)
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
 def p_call(p):
@@ -331,7 +337,6 @@ def p_varcte_constant(p):
 
 def p_varcte_constant_true(p):
     '''varcte : TRUE'''
-    print "found true"
     p[0] = symtable.add_constant(1)
 
 def p_varcte_constant_false(p):
@@ -343,38 +348,48 @@ def p_varcte_id(p):
     var = symtable.get_var(p[1])
     if not var:
         errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[1]))
+        raise SyntaxError
     else:
         p[0] = var
 
 def p_varcte_id_array(p):
     '''varcte : ID array_index'''
     var = symtable.get_var(p[1])
-    if not var:
-        errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[1]))
-    elif var['type'] != list:
-        errors.append("Line {}: Variable '{}' is not an array".format(p.lineno(1), p[1]))
-    # TODO: una vez que se arregle la definicion de arreglos hay que 
-    # sacar el valor que este en p[2]
     p[0] = var
 
-def p_varcte_function(p):
+def p_varcte_call(p):
     '''varcte : call'''
-    # TODO: revisar: genera temp nueva y le da el tipo de que regresa la funcion
-    p[0] = {'dir':codegen.newtemp(), 'type':symtable.get_proc(p[1])['type']}
+    var = symtable.proc_table['program']['var_table'][p[1]]
+    p[0] = {'dir':var['dir'], 'type':var['type']}
 
 def p_array_index(p):
-    '''array_index : LBRACK expression RBRACK
-                   | LBRACK expression RBRACK array_index'''
-    # TODO: cuando se implemente el cubo semantico hay que validar los indices
-    #if not isinstance(p[2], (int, long)):
-    #    errors.append('Line {}: indices must be integers, not {}'.format(p.lineno(1)))
-    # TODO: generacion de codigo
+    '''array_index : LBRACK expression RBRACK'''
+    print p[-1]
+    var = symtable.get_var(p[-1])
+    if not var:
+        errors.append("Line {}: Undefined variable '{}'".format(p.lineno(1), p[1]))
+        raise SyntaxError
+    elif not var['dim']:
+        errors.append("Line {}: Variable '{}' is not an array".format(p.lineno(1), p[1]))
+        raise SyntaxError
+    
+    exp_res = codegen.opdos.pop()
+    if exp_res['type'] != int:
+        errors.append("Line {}: Index must be integer:".format(p.lineno(1)))
+        raise SyntaxError
+    
+    liminf = 0
+    limsup = var['dim']-1
+    codegen.gen_quad('ver', exp_res['dir'], liminf, limsup)
+    basedir = symtable.add_constant(var['dir'])
+    pointer = symtable.newpointer()
+    codegen.gen_quad(dir.suma, basedir['dir'], exp_res['dir'], pointer)
+    p[0] = {'dir':pointer, 'type':int}
 
 def p_array(p):
     '''array : LBRACK array_elements RBRACK'''
     # TODO: parche temporal, hay que arreglar el uso de arreglos
-    
-    codegen.opdos.append({'dir':'array', 'type': list})
+    p[0] = p[2]
 
 def p_array_empty(p):
     '''array : LBRACK RBRACK'''
@@ -383,9 +398,11 @@ def p_array_empty(p):
 
 def p_array_elements(p):
     '''array_elements : expression'''
+    p[0] = [codegen.opdos.pop()]
 
 def p_array_elements_2(p):
     '''array_elements : expression COMA array_elements'''
+    p[0] = [codegen.opdos.pop()] + p[3]
 
 def p_type_int(p):
     'type : TYPEINT'
@@ -415,21 +432,23 @@ if (len(sys.argv) <= 1):
 else:
     f = open(sys.argv[1], 'r')
     yacc.parse(f.read())
+    symtable.print_symtable()
+    for quad in codegen.quads:
+          print(quad)
     if len(errors) > 0:
         if len(errors) == 1: print('found '+str(len(errors))+' error:')
         else:                print('found '+str(len(errors))+' errors:')
         for error in errors:
             print('    '+error)
     else:
-        symtable.print_symtable()
+        
         
         # build the actual list to be written to the object file
         # first section, the count of global variables and temporals
         global_counts = symtable.proc_table['program']['var_counter'].values()
         
         
-        for quad in codegen.quads:
-          print(quad)
+        
         
         
         print('Program has no errors')

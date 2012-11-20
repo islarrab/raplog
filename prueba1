@@ -10,6 +10,7 @@ int main () {
 	if a*b > a+c
 	{
 		put "a*b > a+c es verdadero!"
+		put a
 	} else {
 		put "a*b > a+c es falso!"
 	}

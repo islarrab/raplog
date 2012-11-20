@@ -51,8 +51,4 @@ of = {
 'and':andd,
 'or':orr,
 'not':nott,
-'print':printt,
-'gotof':gotof,
-'gotov':gotov,
-'goto':goto,
 }
