@@ -280,7 +280,7 @@ def p_callparams_aux(p):
     global param_counter
     param_counter += 1
     aux = codegen.opdos.pop()
-    codegen.gen_quad(dir.param, aux['dir'], -1, dir.param+str(param_counter))
+    codegen.gen_quad(dir.param, aux['dir'], -1, 'param'+str(param_counter))
 
 def p_expression_binop(p):
     '''expression : expression AND expression
