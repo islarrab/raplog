@@ -259,46 +259,42 @@ def p_w3(p):
     codegen.quads[gotof_index][3] = codegen.curr_ins+1
 
 def p_call(p):
-    'call : ID c1 LPAREN callparams RPAREN'
+    '''call : ID LPAREN callparams RPAREN
+            | ID LPAREN noparams RPAREN'''
+    # checa si existe la funcion
+    proc = symtable.get_proc(p[1])
+    if not proc:
+        print str(p[1])+' not found!'
+        errors.append("Line {}: Call to an undefined function '{}'".format(lineno, p[1]))
+        raise SyntaxError
+
+    codegen.gen_quad(dir.era, -1, -1, -1)
     
-    # semantica y cuadruplos para parametros
-    proc_params = symtable.get_proc(p[1])['params']
-    call_params = p[4]
+    # compara el numero de parametros
+    proc_params = proc['params']
+    call_params = p[3]
     if len(proc_params) != len(call_params):
         errors.append('Line {}: wrong number of arguments in call to \'{}\''.format(lineno, p[1]))
         raise SyntaxError
+    
+    # compara el tipo de parametros, y genera los cuadruplos correspondientes
     for i in range(len(call_params)):
         if proc_params[i]['type'] != call_params[i]['type']:
             errors.append('Line {}: inconsistent parameters in \'{}\''.format(lineno, p[1]))
             raise SyntaxError
         codegen.gen_quad(dir.param, call_params[i]['dir'], -1, proc_params[i]['dir'])
     
-    codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
+    codegen.gen_quad(dir.gosub, proc['start_no'], -1, -1)
     
     # devuelve el id para usarse en expresiones
     p[0] = p[1]
 
-def p_call_no_params(p):
-    'call : ID c1 LPAREN RPAREN'
-    codegen.gen_quad(dir.gosub, symtable.get_proc(p[1])['start_no'], -1, -1)
-    
-    # devuelve el id para usarse en expresiones
-    p[0] = p[1]
-
-def p_c1(p):
-    'c1 :'
-    proc = symtable.get_proc(p[-1])
-    if not proc:
-        errors.append("Line {}: Call to an undefined function '{}'".format(p.lineno(1), p[1]))
-        raise SyntaxError
-    else:
-        global call_id
-        call_id = p[-1]
-        codegen.gen_quad(dir.era, -1, -1, -1)
+def p_noparams(p):
+    '''noparams :'''
+    p[0] = []
 
 def p_callparams(p):
-    '''callparams : expression COMA callparams
-                  | '''
+    '''callparams : expression COMA callparams'''
     aux = codegen.opdos.pop()
     p[0] = [aux] + p[3]
 
@@ -384,7 +380,9 @@ def p_varcte_id_array(p):
 def p_varcte_call(p):
     '''varcte : call'''
     var = symtable.proc_table['program']['var_table'][p[1]]
-    p[0] = {'dir':var['dir'], 'type':var['type']}
+    tempdir = symtable.newtemp(var['type'])
+    codegen.gen_quad(dir.asigna, var['dir'], -1, tempdir)
+    p[0] = {'dir':tempdir, 'type':var['type']}
 
 def p_array_index(p):
     '''array_index : LBRACK expression RBRACK'''
