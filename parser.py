@@ -121,7 +121,8 @@ def p_new_scope(p):
 
 def p_add_proc(p):
     'add_proc :'
-    symtable.add_proc(p[-1], codegen.curr_ins+1, p[-2])
+    # la razon de curr_ins+2 es para que se brinque el goto generado en cada funcion
+    symtable.add_proc(p[-1], codegen.curr_ins+2, p[-2])
     codegen.gen_quad(dir.goto, -1, -1, -1)
     codegen.jumps.append(codegen.curr_ins)
 # Semantic rules end
@@ -306,6 +307,13 @@ def p_callparams(p):
     if len(p) == 4: p[0] = [aux] + p[3]
     else:           p[0] = [aux]
 
+def p_callparams(p):
+    '''callparams : expression COMA callparams
+                  | expression'''
+    aux = codegen.opdos.pop()
+    if len(p) == 4: p[0] = [aux] + p[3]
+    else:           p[0] = [aux]
+
 def p_expression_binop(p):
     '''expression : expression AND expression
                   | expression OR expression
@@ -410,13 +418,11 @@ def p_array_index(p):
 
 def p_array(p):
     '''array : LBRACK array_elements RBRACK'''
-    # TODO: parche temporal, hay que arreglar el uso de arreglos
     p[0] = p[2]
 
 def p_array_empty(p):
     '''array : LBRACK RBRACK'''
-    # TODO: igual que arriba
-    codegen.opdos.append({'dir':'array', 'type': list})
+    p[0] = []
 
 def p_array_elements(p):
     '''array_elements : expression'''
