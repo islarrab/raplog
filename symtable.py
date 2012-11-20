@@ -142,8 +142,8 @@ def add_var(name, type, dim):
     var = {}
     
     # diferenciacion entre variables globales y locales
-    if current_proc == 'program': dirs = localdirs
-    else:                         dirs = globaldirs
+    if current_proc == 'program': dirs = globaldirs
+    else:                         dirs = localdirs
     
     if name in var_table:
         # la variable ya existe, solo reasigna tipo y dimensiones
@@ -153,7 +153,7 @@ def add_var(name, type, dim):
                 'dim': dim }
     else:
         # la variable no existe, la crea y suma a contadores
-        var = { 'dir': localdirs[type],
+        var = { 'dir': dirs[type],
                 'type': type,
                 'dim': dim }
         if dim:
