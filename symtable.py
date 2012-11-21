@@ -60,23 +60,35 @@ proc_table = {
         'params':[],
         'var_table':var_table},
     'forward' : {
-        'start_no':dir.forward,
+        'start_no':dir.f_forward,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+    'backward' : {
+        'start_no':dir.f_forward,
         'params':[{'dir':40000, 'type':int, 'dim':None}]},
     'right' : {
-        'start_no':dir.right,
-        'var_counter':None,
-        'temp_counter':None,
-        'type':None,
-        'params':[{'dir':40000, 'type':int, 'dim':None}],
-        'var_table':None},
+        'start_no':dir.f_right,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
     'left' : {
-        'start_no':dir.left,
-        'var_counter':None,
-        'temp_counter':None,
-        'type':None,
-        'params':[{'dir':40000, 'type':int, 'dim':None}],
-        'var_table':None},
-    
+        'start_no':dir.f_left,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+    'goto' : {
+        'start_no':dir.f_goto,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+    'setx' : {
+        'start_no':dir.f_setx,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+    'sety' : {
+        'start_no':dir.f_sety,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+    'speed' : {
+        'start_no':dir.f_speed,
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+    'position' : {
+        'start_no':dir.f_position,
+        'params':[]},
+    'towards' : {
+        'start_no':dir.f_towards,
+        'params':[]},
 }
               
 current_proc = 'program'
