@@ -7,6 +7,7 @@ from mem import *
 from fun import *
 import shlex
 import turtle
+import dir
 
 memglobal = Memoria(0)
 memconst = Memoria(80000)
@@ -16,6 +17,7 @@ cuadruplos = []
 ieje = 0
 param = []
 stack = []
+a = False
 
 def getIndiceEjecucion():
     return ieje
@@ -61,25 +63,78 @@ def permiteEjecutar():
 #Descripción: Método de instancia el cual ejecuta el siguiente cuadruplo y escribe el objeto MensajeCuadruplo con la información de regreso
 #Entrada: cuad
 def ejecutaCuadruplos():
-    global ieje, arreglotemp
+    global ieje, arreglotemp, a
     while ieje < getTotalCuad():
-        if ieje == -1: #forward
+        if ieje == dir.f_forward: #forward
             v1 = lee_memoria(arreglotemp.param.pop())
             turtle.forward(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
+            a = True
+
+        elif ieje == dir.f_backward: #backward
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.backward(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
             
-        elif ieje == -2: #right
+        elif ieje == dir.f_right: #right
             v1 = lee_memoria(arreglotemp.param.pop())
             turtle.right(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
+            a = True
             
-        elif ieje == -3: #left
+        elif ieje == dir.f_left: #left
             v1 = lee_memoria(arreglotemp.param.pop())
             turtle.left(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
+            a = True
+
+        elif ieje == dir.f_goto: #turtle_goto
+            v1 = lee_memoria(arreglotemp.param.pop())
+            v2 = lee_memoria(arreglotemp.param.pop())
+            turtle.goto(v1,v2)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+            
+        elif ieje == dir.f_setx: #setx
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.setx(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+            
+        elif ieje == dir.f_sety: #sety
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.sety(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+
+        elif ieje == dir.f_speed: #speed
+            v1 = lee_memoria(arreglotemp.param.pop())
+            turtle.speed(v1)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+
+        elif ieje == dir.f_position: #position
+            v1 = turtle.position()
+            arreglotemp.valor = v1
+            a = True
+
+        elif ieje == dir.f_towards: #towards
+            v1 = lee_memoria(arreglotemp.param.pop())
+            v2 = lee_memoria(arreglotemp.param.pop())
+            turtle.towards(v1,v2)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+            
 
         cuad= cuadruplos[ieje]
         ieje +=1
@@ -90,47 +145,47 @@ def ejecutaCuadruplos():
         if(cuad[2]>=160000):
             cuad[2]=lee_memoria(cuad[2])
         
-        if op == 0: # suma
+        if op == dir.suma: # suma
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1+v2)
 
-        elif op == 1: #resta
+        elif op == dir.resta: #resta
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1-v2)
             
-        elif op == 2: #multiplicacion
+        elif op == dir.multi: #multiplicacion
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1*v2)
             
-        elif op == 3: #division
+        elif op == dir.div: #division
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1/v2)
             
-        elif op == 4: #menor que
+        elif op == dir.menorq: #menor que
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1<v2)
 
-        elif op == 5: #mayor que
+        elif op == dir.mayorq: #mayor que
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1>v2)
                     
-        elif op == 6: #igual
+        elif op == dir.igual: #igual
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1==v2)
         
-        elif op == 7: #diferente a
+        elif op == dir.difer: #diferente a
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1!=v2)
          
-        elif op == 8: #asignacion
+        elif op == dir.asigna: #asignacion
             if cuad[3]>=160000:
                 cuad[3]=lee_memoria(cuad[3])            
             if arreglotemp.valor != 0 or arreglotemp.valor:
@@ -143,7 +198,7 @@ def ejecutaCuadruplos():
             else:
                 print "- " + str(type(v1)) + ' cannot be assigned to ' + str(memglobal.tipoMem(cuad[3]))
 
-        elif op == 9: #and
+        elif op == dir.andd: #and
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             if v1 and v2:
@@ -151,7 +206,7 @@ def ejecutaCuadruplos():
             else:
                 guarda_en_memoria(cuad[3], False)
 
-        elif op == 10: #or
+        elif op == dir.orr: #or
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             if v1 or v2:
@@ -159,21 +214,21 @@ def ejecutaCuadruplos():
             else:
                 guarda_en_memoria(cuad[3], False)
 
-        elif op == 11: #not
+        elif op == dir.nott: #not
             v1 = lee_memoria(cuad[1])
             if v1:
                 guarda_en_memoria(cuad[3], False)
             else:
                 guarda_en_memoria(cuad[3], True)
             
-        elif op == 12: # print
+        elif op == dir.printt: # print
             v1 = lee_memoria(cuad[1])
             if type(v1) == type([]):
                 print lee_arreglo(v1)
             else:
                 print v1
         
-        elif op == 13: # gotof
+        elif op == dir.gotof: # gotof
             v1 = lee_memoria(cuad[1])
             if type(v1) == bool or type(v1) == int:
                 if v1 == False or v1 == 0:
@@ -181,45 +236,45 @@ def ejecutaCuadruplos():
             else:
                 print "* " + str(type(v1)) + " No es valido."
         
-        elif op == 14: # gotov
+        elif op == dir.gotov: # gotov
             v1 = lee_memoria(cuad[1])
             if type(v1) == bool or type(v1) == int:
                 if v1 == True or v1 != 0:
                     ieje = int(cuad[3])
             else:
                 print "* " + str(type(v1)) + " No es valido."        
-        elif op == 15: # goto
+        elif op == dir.goto: # goto
             ieje = int(cuad[3])
 
-        elif op == 16: #menorigual que
+        elif op == dir.menorigualq: #menorigual que
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1<=v2)
 
-        elif op == 17: #mayorigual que
+        elif op == dir.mayorigualq: #mayorigual que
             v1 = lee_memoria(cuad[1])
             v2 = lee_memoria(cuad[2])
             guarda_en_memoria(cuad[3], v1>=v2)
 
-        elif op == 18: #era
+        elif op == dir.era: #era
             arrFun = Funciones()
         
-        elif op == 19: # gosub
+        elif op == dir.gosub: # gosub
             arreglotemp.ieje = ieje
             stack.append(arreglotemp)
             ieje = cuad[1]
             arreglotemp = arrFun
         
-        elif op == 20: # ret
+        elif op == dir.ret: # ret
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
             
-        elif op == 21: # param
+        elif op == dir.param: # param
             v1 = lee_memoria(cuad[1])
             direccionP = cuad[3]
             arrFun.setParam(direccionP, v1, arreglotemp, memresto)
 
-        elif op == 22: # return
+        elif op == dir.retorno: # return
             tipoRetorno = memglobal.tipoMem(cuad[1])
             v1 = lee_memoria(cuad[1])
             arreglotemp = stack.pop()
@@ -230,14 +285,14 @@ def ejecutaCuadruplos():
                 print "* " + str(type(v1)) + "no es un tipo correcto, se espera el tipo", tipoRetorno, "."   
             ieje = arreglotemp.ieje
             
-        elif op == 23: #scan
+        elif op == dir.scan: #scan
             v1 = memglobal.tipoMem(cuad[3])(raw_input("-"))
             if type(v1) == memglobal.tipoMem(cuad[3]):
                 guarda_en_memoria(cuad[3], v1)
             else:
                 print "* " + str(type(v1)) + ' no se puede asignar con un ' + str(memglobal.tipoMem(cuad[3]))    
 
-        elif op == 24: #verifica
+        elif op == dir.verifica: #verifica
             v1 = lee_memoria(cuad[1])
             li = cuad[2]
             ls = cuad[3]
@@ -290,7 +345,8 @@ def main():
     cargarArchivo('prueba3.rlo')
     if permiteEjecutar():
         ejecutaCuadruplos()
-        turtle.done()
+        if a:
+            turtle.done()
     #print memconst.get()
     #print memglobal.get()
 

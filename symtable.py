@@ -73,7 +73,7 @@ proc_table = {
         'params':[{'dir':40000, 'type':int, 'dim':None}]},
     'goto' : {
         'start_no':dir.f_goto,
-        'params':[{'dir':40000, 'type':int, 'dim':None}]},
+        'params':[{'dir':40000, 'type':int, 'dim':None}, {'dir':40001, 'type':int, 'dim':None}]},
     'setx' : {
         'start_no':dir.f_setx,
         'params':[{'dir':40000, 'type':int, 'dim':None}]},
