@@ -1,6 +1,6 @@
 max_depth = 6 #Maxima profundidad recursiva
 #Reducir el numero anterior hace triangulos mas sencillos
-int triangulo(int lenght) {
+int triangulo(int length) {
 	i = 0
 	while i < 3 {
 	    forward(length)
@@ -19,8 +19,8 @@ float potencia (float base, float exponente) {
 	return res
 }
 
-int sierpinski(depth=0):
-    avance = 300.0/float(2**depth)
+int sierpinski(int depth):
+    avance = 300.0/potencia(2, depth)
     if depth < MAX_DEPTH:
         triangulo(avance)
         forward(avance/2)
@@ -47,6 +47,6 @@ if __name__ == "__main__":
     tracer(False)
     speed(0) #le da supervelocidad a la tortuga
     backward(200) #Retrocede un poco para dejar ver el triangulo
-    sierpinski() #Dibuja el triangulo
+    sierpinski(0) #Dibuja el triangulo
     #sleep(10) #Damos un tiempo para admirar el triangulo despues de pintado
     done()

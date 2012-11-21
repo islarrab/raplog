@@ -9,7 +9,7 @@ int main () {
 	{
 		print "a*b > a+c es verdadero!"
 		print a
-	} else {
+	} else { 
 		print "a*b > a+c es falso!"
 	}
 	

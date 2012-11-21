@@ -82,7 +82,7 @@ def t_ID(t):
     return t
 
 # Ignored characters
-t_ignore = " \t"
+t_ignore = " \t\r"
 t_ignore_COMMENT = r'\#.*'
 
 def t_newline(t):
