@@ -9,4 +9,3 @@ a2[3] = 16
 a2[4] = 32
 print("Si la siguiente linea es -15, la ejecucion es correcta")
 print(a2[0]*a2[1]/a2[2]+a2[3]-a2[4])
-
