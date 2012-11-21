@@ -61,11 +61,7 @@ proc_table = {
         'var_table':var_table},
     'forward' : {
         'start_no':dir.forward,
-        'var_counter':None,
-        'temp_counter':None,
-        'type':None,
-        'params':[{'dir':40000, 'type':int, 'dim':None}],
-        'var_table':None},
+        'params':[{'dir':40000, 'type':int, 'dim':None}]},
     'right' : {
         'start_no':dir.right,
         'var_counter':None,

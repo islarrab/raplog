@@ -44,9 +44,18 @@ scan = 23
 verifica = 24
 
 # funciones pre-definidas
-forward = -1
-right = -2
-left = -3
+f_forward = -1
+f_backward = -2
+f_right = -3
+f_left = -4
+f_goto = -5
+f_setx = -6
+f_sety = -7
+f_speed = -8
+
+f_position = -9
+f_towards = -10
+
 
 of = {
 '+':suma,

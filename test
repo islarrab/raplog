@@ -1,5 +1,5 @@
-int f(int n){
-  return n*n
-}
-
-i = f(2) + f(3)
+forward(100)
+right(90)
+forward(100)
+left(90)
+forward(100)
