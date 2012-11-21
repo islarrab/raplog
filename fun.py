@@ -1,3 +1,17 @@
+# -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Esta es la clase Funciones donde se crea la memoria temporal 
+# y local de tipo Memoria, asi mismo recibe parametros para las funciones y/o
+# un valor
+#
+
 from mem import *
 
 class Funciones:

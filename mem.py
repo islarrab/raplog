@@ -1,3 +1,16 @@
+# -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Esta es la clase Memoria donde se crean los diccionarios para
+# asociar a las direcciones con valores dependiendo del tipo de variable
+#
+
 class Memoria:
     def __init__(self, ofst):        
         self.mem = dict()

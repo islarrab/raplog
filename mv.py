@@ -1,5 +1,19 @@
-#!/usr/bin/env python
 # -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Es la Maquina virtual que se encarga de leer el archivo .rlo
+# generado por el parser y procesar los cuadruplos
+# Valores de entrada : Nombre de archivo
+# Valores de salida : Ejecucion de los cuadruplos
+#
+
+#!/usr/bin/env python
 
 import sys
 import os

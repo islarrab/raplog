@@ -1,3 +1,17 @@
+# -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Genera cuadruplos
+# Valores de entrada : Nada
+# Valores de salida : Cuadruplos
+#
+
 #!/usr/bin/env python
 # file codegen.py
 

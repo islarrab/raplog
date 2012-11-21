@@ -1,3 +1,16 @@
+# -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Este es el cubo semántico donde se comprueba que las operaciones
+# entre dos operadores sean del tipo permitido
+#
+
 # Cubo Semantico
 import dir
 

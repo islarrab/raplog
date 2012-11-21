@@ -1,4 +1,20 @@
 #!/usr/bin/env python
+# -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Es el parser que se encarga de parsear el archivo creado por la
+# interfaz, los convierte a cuadruplos para que después sean procesados por
+# la máquina virtual
+# Valores de entrada : Nombre de archivo
+# Valores de salida : Archivo parseado .rlo
+#
+
 # file parser.py
 import sys
 import lex

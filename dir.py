@@ -1,3 +1,18 @@
+# -*- coding: cp1252 -*-
+#
+# Autores: Melissa M. González Mtz. A01087765
+#          Isaac Larraguibel Bours A00231505
+#
+# Clase: Compiladores
+# Profesora: Elda Guadalupe Quiroga González
+# Fecha: 21 de Noviembre del 2012
+#
+# Descripción: Este es un archivo que tiene definidas las variables y sus valores 
+# para uso tanto del parser como de la maquina virtual
+# Valores de entrada : Nada
+# Valores de salida : todas las variables
+#
+
 globint = 0
 globfloat = 10000
 globstr = 20000
