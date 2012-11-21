@@ -71,6 +71,8 @@ f_speed = -8
 f_position = -9
 f_towards = -10
 
+f_mathpow = -11
+
 
 of = {
 '+':suma,

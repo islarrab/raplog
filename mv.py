@@ -22,6 +22,7 @@ from mem import *
 from fun import *
 import shlex
 import turtle
+import math
 import dir
 
 memglobal = Memoria(0)
@@ -146,6 +147,14 @@ def ejecutaCuadruplos():
             v1 = lee_memoria(arreglotemp.param.pop())
             v2 = lee_memoria(arreglotemp.param.pop())
             turtle.towards(v1,v2)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+        
+        elif ieje == dir.f_mathpow: #mathpow
+            v1 = lee_memoria(arreglotemp.param.pop())
+            v2 = lee_memoria(arreglotemp.param.pop())
+            guarda_en_memoria(10000, math.pow(v1,v2))
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
             a = True

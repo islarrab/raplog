@@ -21,7 +21,7 @@ import dir
 
 # direcciones virtuales
 globaldirs = {int:dir.globint,
-              float:dir.globfloat,
+              float:dir.globfloat+1,
               str:dir.globstr,
               bool:dir.globbool}
 localdirs = {int:dir.localint,
@@ -105,10 +105,15 @@ proc_table = {
     'towards' : {
         'start_no':dir.f_towards,
         'params':[]},
+    'mathpow' : {
+        'start_no':dir.f_mathpow,
+        'type':float,
+        'params':[{'dir':40000, 'type':int, 'dim':None}, {'dir':40001, 'type':int, 'dim':None}]},
 }
               
 current_proc = 'program'
 
+proc_table['program']['var_table']['mathpow'] = {'dir':10000, 'type':float, 'dim':None}
 
 def pop_scope():
     var_table = scopes.pop()
