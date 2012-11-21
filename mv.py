@@ -3,6 +3,7 @@
 
 import sys
 import os
+import time
 from mem import *
 from fun import *
 import shlex
@@ -300,6 +301,7 @@ def ejecutaCuadruplos():
                 print "* " + str(v1) + ' No esta dentro del limite ' + str(li) + ' - ' + str(ls)
 
         elif op == -1: #termina el programa
+            time.sleep(60)
             break;
         
 # Guarda la direccion
@@ -342,13 +344,14 @@ def registro_listo(self):
     return stackeje.stack.Peek().rm.ready()
 
 def main():
-    cargarArchivo('prueba3.rlo')
-    if permiteEjecutar():
-        ejecutaCuadruplos()
-        if a:
-            turtle.done()
-    #print memconst.get()
-    #print memglobal.get()
+    if (len(sys.argv) <= 1):
+        print('No file specified, exiting now')
+    else:
+        cargarArchivo(sys.argv[1])
+        if permiteEjecutar():
+            ejecutaCuadruplos()
+            if a:
+                turtle.done()
 
 
 
