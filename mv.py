@@ -248,9 +248,11 @@ def ejecutaCuadruplos():
         elif op == dir.printt: # print
             v1 = lee_memoria(cuad[1])
             if type(v1) == type([]):
-                print lee_arreglo(v1)
+                sys.stdout.write(str(lee_arreglo(v1)))
             else:
-                print v1
+                print "got to a print"
+                sys.stdout.write(str(v1))
+                sys.stdout.flush()
         
         elif op == dir.gotof: # gotof
             v1 = lee_memoria(cuad[1])
@@ -380,3 +382,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print "exit main"
+    sys.stdout.close()

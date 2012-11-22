@@ -1,4 +1,4 @@
-int fibonacci(int n) {
+def fibonacci(int n) {
     if n > 2
     {
     	f1 = 0
@@ -11,7 +11,7 @@ int fibonacci(int n) {
     }
 }
 
-int factorial(int n) {
+def factorial(int n) {
 	if n <= 1 {
 		return n
 	} else {
@@ -22,11 +22,11 @@ int factorial(int n) {
 
 a = 1
 
-int main (){
+def main (){
 	_asd123ASD = 1
 	ABC_DEF = 2
 	_______ = 3 # segun sintaxis esto es un id aceptable
-	print "secuencia fibonacci hasta el 10° numero"
+	print "secuencia fibonacci hasta el 10° numero\n"
 	i = 1
 	while i <= 10 {
 		res = fibonacci(i)
@@ -36,7 +36,8 @@ int main (){
 	}
 	res = 0
 	res = factorial(10)
-	print "factorial de 10 es "
+	print "\nfactorial de 10 es "
 	print res
+	print "\n"
 }
 main()

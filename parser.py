@@ -41,7 +41,8 @@ reserved = {
    'return' : 'RETURN',
    'int' : 'TYPEINT',
    'float' : 'TYPEFLOAT',
-   'string' : 'TYPESTRING'
+   'string' : 'TYPESTRING',
+   'def' : 'DEF'
 }
 
 tokens = list(reserved.values()) + [
@@ -132,13 +133,13 @@ start = 'raplog'
 
 # Semantic rules
 def p_new_scope(p):
-    "new_scope :"
+    'new_scope :'
     symtable.new_scope()
 
 def p_add_proc(p):
     'add_proc :'
     codegen.gen_quad(dir.goto, -1, -1, -1)
-    symtable.add_proc(p[-1], codegen.curr_ins+1, p[-2])
+    symtable.add_proc(p[-1], codegen.curr_ins+1, int)
     codegen.jumps.append(codegen.curr_ins)
 # Semantic rules end
 
@@ -154,7 +155,7 @@ def p_raplog(p):
               | empty'''
 
 def p_function(p):
-    'function : type ID add_proc defparams statements-block'
+    'function : DEF ID add_proc defparams statements-block'
     symtable.end_current_proc()
     codegen.gen_quad(dir.ret, -1, -1, -1)
     codegen.quads[codegen.jumps.pop()][3] = codegen.curr_ins+1
@@ -291,14 +292,14 @@ def p_call(p):
      proc_params = proc['params']
      call_params = p[3]
      if len(proc_params) != len(call_params):
-         errors.append('Line {}: wrong number of arguments in call to \'{}\''.format(lineno, p[1]))
+         errors.append("Line {}: wrong number of arguments in call to '{}'".format(lineno, p[1]))
          raise SyntaxError
      
      # compara el tipo de parametros, y genera los cuadruplos correspondientes
      for i in range(len(call_params)):
-         if proc_params[i]['type'] != call_params[i]['type']:
-             errors.append('Line {}: inconsistent parameters in \'{}\''.format(lineno, p[1]))
-             raise SyntaxError
+         #if proc_params[i]['type'] != call_params[i]['type']:
+         #    errors.append('Line {}: inconsistent parameters in \'{}\''.format(lineno, p[1]))
+         #    raise SyntaxError
          codegen.gen_quad(dir.param, call_params[i]['dir'], -1, proc_params[i]['dir'])
      
      codegen.gen_quad(dir.gosub, proc['start_no'], -1, -1)
@@ -458,10 +459,10 @@ def p_empty(p):
 def p_error(t):
     errors.append("Line {}: Syntax error near {}".format(t.lineno, t.value))
     # Panic mode: Read ahead looking for a closing '}'
-    while 1:
-        tok = yacc.token()             # Get the next token
-        if not tok or tok.type == 'RBRACE': break
-    yacc.restart()
+    #while 1:
+    #    tok = yacc.token()             # Get the next token
+    #    if not tok or tok.type == 'RBRACE': break
+    #yacc.restart()
 
 # Build the parser
 yacc.yacc()

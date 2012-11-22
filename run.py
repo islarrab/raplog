@@ -16,10 +16,7 @@ import sys
 import os
 import mv
 
-def main():
-    a="raplog"
-    os.system("parser.py "+a)
-    os.system("mv.py "+a+".rlo")
-
 if __name__ == "__main__":
-    main()
+    raplog_file = sys.argv[1]
+    os.system("python parser.py "+raplog_file)
+    os.system("python mv.py "+raplog_file+".rlo")
