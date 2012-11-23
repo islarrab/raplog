@@ -114,7 +114,7 @@ def t_error(t):
 	t.lexer.skip(1)
 
 # Build the lexer 
-lex.lex()
+lex.lex(optimize=1)
 
 # Parsing rules
 precedence = (
@@ -466,7 +466,7 @@ def p_error(t):
     #yacc.restart()
 
 # Build the parser
-yacc.yacc()
+yacc.yacc(optimize=1)
 
 # Parse input file
 if (len(sys.argv) <= 1):

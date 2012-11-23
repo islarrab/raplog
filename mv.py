@@ -90,7 +90,6 @@ def ejecutaCuadruplos():
 
         elif ieje == dir.f_backward: #backward
             v1 = lee_memoria(arreglotemp.param.pop())
-            print "backward("+str(v1)+")"
             turtle.backward(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
