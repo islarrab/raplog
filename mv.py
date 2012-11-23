@@ -22,7 +22,6 @@ from mem import *
 from fun import *
 import shlex
 import turtle
-import math
 import dir
 
 memglobal = Memoria(0)
@@ -80,6 +79,7 @@ def permiteEjecutar():
 #Entrada: cuad
 def ejecutaCuadruplos():
     global ieje, arreglotemp, a
+    
     while ieje < getTotalCuad():
         if ieje == dir.f_forward: #forward
             v1 = lee_memoria(arreglotemp.param.pop())
@@ -104,7 +104,6 @@ def ejecutaCuadruplos():
             
         elif ieje == dir.f_left: #left
             v1 = lee_memoria(arreglotemp.param.pop())
-            #print "left("+str(v1)+")"
             turtle.left(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
@@ -148,14 +147,6 @@ def ejecutaCuadruplos():
             v1 = lee_memoria(arreglotemp.param.pop())
             v2 = lee_memoria(arreglotemp.param.pop())
             turtle.towards(v1,v2)
-            arreglotemp = stack.pop()
-            ieje = arreglotemp.ieje
-            a = True
-        
-        elif ieje == dir.f_mathpow: #mathpow
-            v1 = lee_memoria(arreglotemp.param.pop())
-            v2 = lee_memoria(arreglotemp.param.pop())
-            guarda_en_memoria(10000, math.pow(v1,v2))
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
             a = True
@@ -218,12 +209,10 @@ def ejecutaCuadruplos():
                 arreglotemp.valor = 0
             else:
                 v1 = lee_memoria(cuad[1])
-            
-            guarda_en_memoria(cuad[3], v1)
-            #if type(v1) == memglobal.tipoMem(cuad[3]):
-            #    guarda_en_memoria(cuad[3], v1)
-            #else:
-            #    print "- " + str(type(v1)) + ' cannot be assigned to ' + str(memglobal.tipoMem(cuad[3]))
+            if type(v1) == memglobal.tipoMem(cuad[3]):
+                guarda_en_memoria(cuad[3], v1)
+            else:
+                print "* " + str(type(v1)) + ' no se puede asignar con un ' + str(memglobal.tipoMem(cuad[3]))
 
         elif op == dir.andd: #and
             v1 = lee_memoria(cuad[1])
@@ -250,7 +239,10 @@ def ejecutaCuadruplos():
             
         elif op == dir.printt: # print
             v1 = lee_memoria(cuad[1])
-            sys.stdout.write(str(v1).replace("\\n", "\n"))
+            if type(v1) == type([]):
+                print lee_arreglo(v1)
+            else:
+                print v1
         
         elif op == dir.gotof: # gotof
             v1 = lee_memoria(cuad[1])
@@ -302,7 +294,11 @@ def ejecutaCuadruplos():
             tipoRetorno = memglobal.tipoMem(cuad[1])
             v1 = lee_memoria(cuad[1])
             arreglotemp = stack.pop()
-            arreglotemp.valor = v1
+        
+            if tipoRetorno == type(v1):
+                arreglotemp.valor = v1
+            else:
+                print "* " + str(type(v1)) + "no es un tipo correcto, se espera el tipo", tipoRetorno, "."   
             ieje = arreglotemp.ieje
             
         elif op == dir.scan: #scan
@@ -320,8 +316,7 @@ def ejecutaCuadruplos():
                 print "* " + str(v1) + ' No esta dentro del limite ' + str(li) + ' - ' + str(ls)
 
         elif op == -1: #termina el programa
-            turtle.done()
-            break;
+            break
         
 # Guarda la direccion
 def guarda_en_memoria(direccion, valor):    
@@ -358,25 +353,34 @@ def lee_memoria(direccion):
         print "Error en lectura:", direccion, class_memory
         exit(1)
 
+def lee_arreglo(li):        
+    aux = []
+    for e in li:
+        if type(e) == type([]):
+            aux.append(lee_arreglo(e))
+        elif memglobal.tipoMem(e) == type([]):                   
+            lir = lee_memoria(e)            
+            aux.append(lee_arreglo(lir))      
+        else:
+            aux.append(lee_memoria(e))
+    return aux
+
 # Descripción: Método de instancia el cual nos indica si el registro de memoria de la funcion esta listo.
 def registro_listo(self):
     return stackeje.stack.Peek().rm.ready()
 
 def main():
     if (len(sys.argv) <= 1):
-        print('No file specified, exiting now')
+        print "No se encuentra archivo."
+        exit(1)
     else:
         cargarArchivo(sys.argv[1])
         if permiteEjecutar():
             ejecutaCuadruplos()
             if a:
-                exit(1)
+                turtle.done()
 
 
 
 if __name__ == "__main__":
-    # parametros iniciales de trutle
-    turtle.speed("normal")
-    turtle.tracer(True)
     main()
-    sys.stdout.close()
