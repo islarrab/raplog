@@ -1,11 +1,89 @@
-a1 = [1, 2, 3]
-a2 = int[5]
-print("Si la siguiente linea es 6, la ejecucion es correcta\n")
-print(a1[0]+a1[1]+a1[2])
-a2[0] = 2
-a2[1] = 4
-a2[2] = 8
-a2[3] = 16
-a2[4] = 32
-print("Si la siguiente linea es -15, la ejecucion es correcta")
-print(a2[0]*a2[1]/a2[2]+a2[3]-a2[4])
+A = [ 10, 2, 6, 58, 68, 5, 9, 4, 37, 48 ]
+B = int[10]
+i = 0
+while(i < 10){
+    B[i] = 1
+	print "A["
+	print i
+	print "] = "
+	print (A[i])
+	i = i+1
+}
+swapped = true
+while(swapped){
+	swapped = false
+	i = 3
+	while(i < 10){
+		
+		print "at "
+		print i
+		print " compare: "
+		print A[i-1]
+		print ", "
+		print A[i]
+		print "\n"
+		
+		if(A[ i - 1 ] > A[ i ]){
+			print "Swap at "
+			print i
+			print "\n"
+			aux = A[i-1]
+			A[i-1] = A[i]
+			A[i] = aux
+			swapped = true
+		}else{
+		}
+				
+		i = i + 1
+	}
+}
+print "\nDespues del sort: \n"
+i = 0
+while(i < 10){
+    print A[i]
+    print ", "
+    i = i + 1
+}
+
+print "\n"
+print A[0]
+print ", "
+print A[1]
+print ", "
+print A[2]
+print ", "
+print A[3]
+print ", "
+print A[4]
+print ", "
+print A[5]
+print ", "
+print A[6]
+print ", "
+print A[7]
+print ", "
+print A[8]
+print ", "
+print A[9]
+
+print "\nB = \n"
+
+print B[0]
+print ", "
+print B[1]
+print ", "
+print B[2]
+print ", "
+print B[3]
+print ", "
+print B[4]
+print ", "
+print B[5]
+print ", "
+print B[6]
+print ", "
+print B[7]
+print ", "
+print B[8]
+print ", "
+print B[9]

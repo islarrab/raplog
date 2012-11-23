@@ -71,7 +71,13 @@ f_speed = -8
 f_position = -9
 f_towards = -10
 
-f_mathpow = -11
+f_color = -11
+f_pencolor = -12
+f_fillcolor = -13
+f_begin_fill = -14
+f_end_fill = -15
+
+f_mathpow = -16
 
 
 of = {
