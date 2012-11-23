@@ -109,6 +109,21 @@ proc_table = {
         'start_no':dir.f_mathpow,
         'type':float,
         'params':[{'dir':40000, 'type':int, 'dim':None}, {'dir':40001, 'type':int, 'dim':None}]},
+    'begin_fill' : {
+        'start_no':dir.f_begin_fill,
+        'params':[]},
+    'end_fill' : {
+        'start_no':dir.f_end_fill,
+        'params':[]},
+    'color' : {
+        'start_no':dir.f_color,
+        'params':[{'dir':40000, 'type':int, 'dim':None}, {'dir':40001, 'type':int, 'dim':None}]},
+    'pencolor' : {
+        'start_no':dir.f_pencolor,
+        'params':[{'dir':40000, 'type':str, 'dim':None}, {'dir':40001, 'type':str, 'dim':None}, {'dir':40002, 'type':str, 'dim':None}]},
+    'fillcolor' : {
+        'start_no':dir.f_fillcolor,
+        'params':[{'dir':40000, 'type':str, 'dim':None}, {'dir':40001, 'type':str, 'dim':None}, {'dir':40002, 'type':str, 'dim':None}]},
 }
               
 current_proc = 'program'

@@ -114,7 +114,7 @@ def t_error(t):
 	t.lexer.skip(1)
 
 # Build the lexer 
-lex.lex(optimize=1)
+lex.lex()
 
 # Parsing rules
 precedence = (
@@ -238,7 +238,8 @@ def p_i1(p):
     'i1 :'
     aux = codegen.opdos.pop()
     if (aux['type'] != bool and aux['type'] != int):
-        errors.append('Line {}: expression must be boolean'.format(lineno))
+        errors.append('Line {}: expression must be boolean'.format(lineno+1))
+        raise SyntaxError
     codegen.gen_quad(dir.gotof, aux['dir'], -1, -1)
     codegen.jumps.append(codegen.curr_ins)
 
@@ -264,8 +265,8 @@ def p_w1(p):
 def p_w2(p):
     'w2 :'
     aux = codegen.opdos.pop()
-    if (aux['type'] != bool):
-        errors.append('Line {}: expresion must be boolean'.format(lineno))
+    if (aux['type'] != bool and aux['type'] != int):
+        errors.append('Line {}: expression must be boolean'.format(lineno+1))
     codegen.gen_quad(dir.gotof, aux['dir'], -1, -1)
     codegen.jumps.append(codegen.curr_ins)
     
@@ -282,7 +283,6 @@ def p_call(p):
     # checa si existe la funcion
     proc = symtable.get_proc(p[1])
     if not proc:
-        print str(p[1])+' not found!'
         errors.append("Line {}: Call to an undefined function '{}'".format(lineno, p[1]))
         raise SyntaxError
     else:
@@ -414,7 +414,7 @@ def p_array_index(p):
     
     exp_res = codegen.opdos.pop()
     if exp_res['type'] != int:
-        errors.append("Line {}: Index must be integer:".format(p.lineno(1)))
+        errors.append("Line {}: Index must be integer".format(p.lineno(1)))
         raise SyntaxError
     
     liminf = 0
@@ -423,7 +423,9 @@ def p_array_index(p):
     basedir = symtable.add_constant(var['dir'])
     pointer = symtable.newpointer()
     codegen.gen_quad(dir.suma, basedir['dir'], exp_res['dir'], pointer)
-    p[0] = {'dir':pointer, 'type':int}
+    res = {'dir':pointer, 'type':int, 'dim':None}
+    #codegen.opdos.append(res)
+    p[0] = res
 
 def p_array(p):
     '''array : LBRACK array_elements RBRACK'''
@@ -466,7 +468,7 @@ def p_error(t):
     #yacc.restart()
 
 # Build the parser
-yacc.yacc(optimize=1)
+yacc.yacc()
 
 # Parse input file
 if (len(sys.argv) <= 1):

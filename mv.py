@@ -159,6 +159,44 @@ def ejecutaCuadruplos():
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
             a = True
+        
+        elif ieje == dir.f_begin_fill:
+            turtle.begin_fill()
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+        
+        elif ieje == dir.f_end_fill:
+            turtle.end_fill()
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+        
+        elif ieje == dir.f_color:
+            v1 = lee_memoria(arreglotemp.param.pop())
+            v2 = lee_memoria(arreglotemp.param.pop())
+            turtle.color(v1, v2)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+        
+        elif ieje == dir.f_pencolor:
+            v1 = lee_memoria(arreglotemp.param.pop())
+            v2 = lee_memoria(arreglotemp.param.pop())
+            v3 = lee_memoria(arreglotemp.param.pop())
+            turtle.pencolor(v1, v2, v3)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
+        
+        elif ieje == dir.f_fillcolor:
+            v1 = lee_memoria(arreglotemp.param.pop())
+            v2 = lee_memoria(arreglotemp.param.pop())
+            v3 = lee_memoria(arreglotemp.param.pop())
+            turtle.fillcolor(v1, v2, v3)
+            arreglotemp = stack.pop()
+            ieje = arreglotemp.ieje
+            a = True
             
 
         cuad= cuadruplos[ieje]
@@ -366,6 +404,7 @@ def main():
     if (len(sys.argv) <= 1):
         print('No file specified, exiting now')
     else:
+        turtle.title("Raplog - "+sys.argv[1])
         cargarArchivo(sys.argv[1])
         if permiteEjecutar():
             ejecutaCuadruplos()
@@ -376,6 +415,7 @@ def main():
 
 if __name__ == "__main__":
     # parametros iniciales de trutle
+    turtle.title("Raplog")
     turtle.speed("normal")
     turtle.tracer(True)
     main()
