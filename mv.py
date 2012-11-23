@@ -90,6 +90,7 @@ def ejecutaCuadruplos():
 
         elif ieje == dir.f_backward: #backward
             v1 = lee_memoria(arreglotemp.param.pop())
+            print "backward("+str(v1)+")"
             turtle.backward(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
@@ -104,6 +105,7 @@ def ejecutaCuadruplos():
             
         elif ieje == dir.f_left: #left
             v1 = lee_memoria(arreglotemp.param.pop())
+            #print "left("+str(v1)+")"
             turtle.left(v1)
             arreglotemp = stack.pop()
             ieje = arreglotemp.ieje
@@ -217,10 +219,12 @@ def ejecutaCuadruplos():
                 arreglotemp.valor = 0
             else:
                 v1 = lee_memoria(cuad[1])
-            if type(v1) == memglobal.tipoMem(cuad[3]):
-                guarda_en_memoria(cuad[3], v1)
-            else:
-                print "- " + str(type(v1)) + ' cannot be assigned to ' + str(memglobal.tipoMem(cuad[3]))
+            
+            guarda_en_memoria(cuad[3], v1)
+            #if type(v1) == memglobal.tipoMem(cuad[3]):
+            #    guarda_en_memoria(cuad[3], v1)
+            #else:
+            #    print "- " + str(type(v1)) + ' cannot be assigned to ' + str(memglobal.tipoMem(cuad[3]))
 
         elif op == dir.andd: #and
             v1 = lee_memoria(cuad[1])
@@ -247,12 +251,7 @@ def ejecutaCuadruplos():
             
         elif op == dir.printt: # print
             v1 = lee_memoria(cuad[1])
-            if type(v1) == type([]):
-                sys.stdout.write(str(lee_arreglo(v1)))
-            else:
-                print "got to a print"
-                sys.stdout.write(str(v1))
-                sys.stdout.flush()
+            sys.stdout.write(str(v1).replace("\\n", "\n"))
         
         elif op == dir.gotof: # gotof
             v1 = lee_memoria(cuad[1])
@@ -304,11 +303,7 @@ def ejecutaCuadruplos():
             tipoRetorno = memglobal.tipoMem(cuad[1])
             v1 = lee_memoria(cuad[1])
             arreglotemp = stack.pop()
-        
-            if tipoRetorno == type(v1):
-                arreglotemp.valor = v1
-            else:
-                print "* " + str(type(v1)) + "no es un tipo correcto, se espera el tipo", tipoRetorno, "."   
+            arreglotemp.valor = v1
             ieje = arreglotemp.ieje
             
         elif op == dir.scan: #scan
@@ -326,7 +321,7 @@ def ejecutaCuadruplos():
                 print "* " + str(v1) + ' No esta dentro del limite ' + str(li) + ' - ' + str(ls)
 
         elif op == -1: #termina el programa
-            time.sleep(60)
+            turtle.done()
             break;
         
 # Guarda la direccion
@@ -376,11 +371,13 @@ def main():
         if permiteEjecutar():
             ejecutaCuadruplos()
             if a:
-                turtle.done()
+                exit(1)
 
 
 
 if __name__ == "__main__":
+    # parametros iniciales de trutle
+    turtle.speed("normal")
+    turtle.tracer(True)
     main()
-    print "exit main"
     sys.stdout.close()

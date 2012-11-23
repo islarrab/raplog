@@ -1,5 +1,5 @@
-max_depth = 6 
-int triangulo(float length){
+max_depth = 6
+def triangulo(length){
 	i = 0 
 	while(i<3){
 		forward(length)
@@ -7,34 +7,39 @@ int triangulo(float length){
 		i = i+1 
 	}
 }
-int sierpinski(int depth){
-	#reduccion=mathpow(2, depth)
-	reduccion = 2
+def sierpinski(depth){
+	reduccion=mathpow(2, depth)
 	avance = 300.0/reduccion 
+	print "reduccion = "
+	print reduccion
+	print ", avance = "
+	print avance
+	print "\n"
 	if(depth < max_depth ){
 		triangulo(avance)
-		forward(avance/2)
-		left(60)
-		triangulo(avance/2)
-		right(60)
-#		backward(avance/2)
-#		sierpinski(depth+1)
-#		forward(avance/2)
-#		sierpinski(depth+1)
-#		left(60)
-#		forward(avance/2)
-#		left(60)
-#		sierpinski(depth+1)
-#		right(60)
-#		backward(avance/2)
-#		right(60)
-#		backward(avance/2)
+        forward(avance/2)
+        left(60)
+        triangulo(avance/2)
+        right(60)
+        backward(avance/2)
+        #comenzamos a darle profundidad recursiva
+        sierpinski(depth+1)
+        forward(avance/2)
+        sierpinski(depth+1)
+        left(60)
+        forward(avance/2)
+        left(60)
+        sierpinski(depth+1)
+        right(60)
+        backward(avance/2)
+        right(60)
+        backward(avance/2)
 	}else{
 	}
 }
 
-backward(200)
 speed(0)
+backward(200)
 sierpinski(0)
 
 

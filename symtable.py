@@ -79,7 +79,7 @@ proc_table = {
         'start_no':dir.f_forward,
         'params':[{'dir':40000, 'type':int, 'dim':None}]},
     'backward' : {
-        'start_no':dir.f_forward,
+        'start_no':dir.f_backward,
         'params':[{'dir':40000, 'type':int, 'dim':None}]},
     'right' : {
         'start_no':dir.f_right,
@@ -104,7 +104,7 @@ proc_table = {
         'params':[]},
     'towards' : {
         'start_no':dir.f_towards,
-        'params':[]},
+        'params':[{'dir':40000, 'type':int, 'dim':None}, {'dir':40001, 'type':int, 'dim':None}]},
     'mathpow' : {
         'start_no':dir.f_mathpow,
         'type':float,

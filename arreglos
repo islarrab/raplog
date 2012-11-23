@@ -1,6 +1,6 @@
 a1 = [1, 2, 3]
 a2 = int[5]
-print("Si la siguiente linea es 6, la ejecucion es correcta")
+print("Si la siguiente linea es 6, la ejecucion es correcta\n")
 print(a1[0]+a1[1]+a1[2])
 a2[0] = 2
 a2[1] = 4

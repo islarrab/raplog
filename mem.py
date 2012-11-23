@@ -46,11 +46,11 @@ class Memoria:
     # Regresa el valor en alguna direccion o imprime error.
     def lee(self, direccion):
         rdireccion = direccion - self.offset
-        if rdireccion in self.mem:
-            return self.mem[rdireccion]
-        else:
-            print "Error en acceso a la memoria"
-            exit(1)
+        #if rdireccion in self.mem:
+        return self.mem[rdireccion]
+        #else:
+        #    print "Error en acceso a la memoria"
+        #    exit(1)
 
     #Revisa si la memoria global esta vacia        
     def revisaVacio(self):        

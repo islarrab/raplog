@@ -165,9 +165,9 @@ def p_defparams_parens(p):
                  | LPAREN RPAREN'''
 
 def p_defparams(p):
-    '''defparams1 : type ID 
-                  | type ID COMA defparams1'''
-    symtable.add_param(p[2], p[1])
+    '''defparams1 : ID 
+                  | ID COMA defparams1'''
+    symtable.add_param(p[1], int)
 
 def p_statements_block(p):
     'statements-block : LCURLY new_scope statements RCURLY'
@@ -291,6 +291,7 @@ def p_call(p):
      # compara el numero de parametros
      proc_params = proc['params']
      call_params = p[3]
+     call_params.reverse()
      if len(proc_params) != len(call_params):
          errors.append("Line {}: wrong number of arguments in call to '{}'".format(lineno, p[1]))
          raise SyntaxError
@@ -474,14 +475,10 @@ else:
     f = open(sys.argv[1], 'r')
     yacc.parse(f.read())
     codegen.gen_quad(-1, -1, -1, -1)
-    symtable.print_symtable()
-    for quad in codegen.quads:
-        print(quad)
     if len(errors) > 0:
         if len(errors) == 1: print('found '+str(len(errors))+' error:')
         else:                print('found '+str(len(errors))+' errors:')
         for error in errors:
             print('    '+error)
     else:
-        print('Program has no errors')
         codegen.write_to_file(sys.argv[1].split('.')[0]+'.rlo')
