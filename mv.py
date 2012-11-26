@@ -34,6 +34,9 @@ ieje = 0
 param = []
 stack = []
 a = False
+auxCuad1 = None
+auxCuad2 = None
+auxCuad3 = None
 
 def getIndiceEjecucion():
     return ieje
@@ -79,7 +82,7 @@ def permiteEjecutar():
 #Descripción: Método de instancia el cual ejecuta el siguiente cuadruplo y escribe el objeto MensajeCuadruplo con la información de regreso
 #Entrada: cuad
 def ejecutaCuadruplos():
-    global ieje, arreglotemp, a
+    global ieje, arreglotemp, a, auxCuad1, auxCuad2, auxCuad3
     
     while ieje < getTotalCuad():
         if ieje == dir.f_forward: #forward
@@ -203,8 +206,10 @@ def ejecutaCuadruplos():
         
         op= cuad[0]
         if(cuad[1]>=160000):
+            auxCuad1=cuad[1]
             cuad[1]=lee_memoria(cuad[1])
         if(cuad[2]>=160000):
+            auxCuad2=cuad[2]
             cuad[2]=lee_memoria(cuad[2])
         
         if op == dir.suma: # suma
@@ -249,7 +254,8 @@ def ejecutaCuadruplos():
          
         elif op == dir.asigna: #asignacion
             if cuad[3]>=160000:
-                cuad[3]=lee_memoria(cuad[3])            
+                auxCuad3=cuad[3]
+                cuad[3]=lee_memoria(cuad[3])
             if arreglotemp.valor != 0 or arreglotemp.valor:
                 v1 = arreglotemp.valor
                 arreglotemp.valor = 0
@@ -363,6 +369,16 @@ def ejecutaCuadruplos():
 
         elif op == -1: #termina el programa
             break
+
+        if auxCuad1 != None:
+            cuad[1]=auxCuad1
+            auxCuad1=None
+        if auxCuad2 != None:
+            cuad[2]=auxCuad2
+            auxCuad2=None
+        if auxCuad3 != None:
+            cuad[3]=auxCuad3
+            auxCuad3=None
         
 # Guarda la direccion
 def guarda_en_memoria(direccion, valor):    
@@ -426,8 +442,6 @@ def main():
             ejecutaCuadruplos()
             if a:
                 turtle.done()
-
-
 
 if __name__ == "__main__":
     # parametros iniciales de trutle
